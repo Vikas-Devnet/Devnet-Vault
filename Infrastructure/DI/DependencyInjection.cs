@@ -1,0 +1,32 @@
+﻿using Application.Services;
+using Domain.Interfaces;
+using Infrastructure.Persistence;
+using Infrastructure.Security;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Infrastructure.DI
+{
+    public static class DependencyInjection
+    {
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
+        {
+            // Database
+            services.AddDbContext<AppDbContext>(opt =>
+                opt.UseSqlServer(config.GetConnectionString("Default")));
+
+            // Repositories
+            services.AddScoped<IUserRepository, UserRepository>();
+
+            // Security
+            services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<ITokenService, JwtTokenService>();
+
+            // Application services (optional: can be here or in Presentation layer)
+            services.AddScoped<AuthService>();
+
+            return services;
+        }
+    }
+}

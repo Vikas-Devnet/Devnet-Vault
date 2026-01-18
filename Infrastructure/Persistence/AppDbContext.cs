@@ -1,6 +1,9 @@
-﻿namespace Infrastructure.Persistence
+﻿using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace Infrastructure.Persistence;
+
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    internal class AppDbContext
-    {
-    }
+    public DbSet<UserMaster> UserMaster => Set<UserMaster>();
 }
