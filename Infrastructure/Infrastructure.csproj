@@ -14,7 +14,6 @@
   <ItemGroup>
     <Folder Include="Configurations\" />
     <Folder Include="Email\" />
-    <Folder Include="Cache\" />
     <Folder Include="Persistence\Migrations\" />
     <Folder Include="Persistence\Repositories\" />
   </ItemGroup>
@@ -23,6 +22,7 @@
     <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.23" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.23" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
   </ItemGroup>
 
 </Project>

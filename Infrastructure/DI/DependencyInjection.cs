@@ -1,5 +1,6 @@
 ﻿using Application.Services;
 using Domain.Interfaces;
+using Infrastructure.Cache;
 using Infrastructure.Persistence;
 using Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
@@ -16,11 +17,18 @@ namespace Infrastructure.DI
             services.AddDbContext<AppDbContext>(opt =>
                 opt.UseSqlServer(config.GetConnectionString("Default")));
 
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = config.GetConnectionString("Redis");
+                options.InstanceName = "AppInstance_";
+            });
+
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();
 
             // Security
             services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<IRedisCacheService, RedisCacheService>();
 
             // Application services (optional: can be here or in Presentation layer)
             services.AddScoped<AuthService>();
