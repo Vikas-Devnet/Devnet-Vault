@@ -1,4 +1,3 @@
-using Infrastructure.Configurations;
 using Infrastructure.DI;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,7 +5,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Add all infra + app services via extension
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddInfrastructure(builder.Configuration);
 
 // Authentication

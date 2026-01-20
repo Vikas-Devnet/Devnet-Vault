@@ -4,7 +4,7 @@ using Domain.Interfaces;
 
 namespace Application.Services;
 
-public class AuthService(IUserRepository users, IPasswordHasher hasher, ITokenService jwt)
+public class AuthService(IUserRepository users, IPasswordHasher hasher)
 {
     public async Task<AuthResultDto> Signup(SignupDto dto)
     {
@@ -18,8 +18,7 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, ITokenSe
         };
 
         await users.AddAsync(user);
-        var token = jwt.Generate(user);
-        return AuthResultDto.Success(token);
+        return AuthResultDto.Success("user");
     }
 
     public async Task<AuthResultDto> Login(LoginUserDto dto)
@@ -30,7 +29,6 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, ITokenSe
         if (!hasher.Verify(dto.Password, user.PasswordHash))
             return AuthResultDto.Fail("Invalid password.");
 
-        var token = jwt.Generate(user);
-        return AuthResultDto.Success(token);
+        return AuthResultDto.Success("token");
     }
 }

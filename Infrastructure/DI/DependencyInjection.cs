@@ -21,7 +21,6 @@ namespace Infrastructure.DI
 
             // Security
             services.AddScoped<IPasswordHasher, PasswordHasher>();
-            services.AddScoped<ITokenService, JwtTokenService>();
 
             // Application services (optional: can be here or in Presentation layer)
             services.AddScoped<AuthService>();
