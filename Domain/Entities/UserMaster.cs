@@ -1,8 +1,12 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Common.Models;
 
-public class UserMaster
+namespace Domain.Entities;
+
+public class UserMaster : AuditProperty
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public string Email { get; set; } = default!;
-    public string PasswordHash { get; set; } = default!;
+    public Guid UserId { get; set; }
+    public string Email { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
+    public string Nationality { get; set; } = string.Empty;
 }

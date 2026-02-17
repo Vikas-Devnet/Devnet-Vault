@@ -1,18 +1,15 @@
-﻿namespace Devnet_Vault.Controllers;
+﻿namespace Presentation.Controllers;
 
 using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
-public class AuthController(AuthService auth) : Controller
+
+[ApiController]
+[Route("api/[Controller]")]
+public class AuthController(AuthService auth) : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Login() => View();
-
-    [HttpGet]
-    public IActionResult Signup() => View();
-
-    [HttpPost]
+    [HttpPost("login")]
     public async Task<IActionResult> Login(LoginUserDto dto)
     {
         var result = await auth.Login(dto);
@@ -23,7 +20,7 @@ public class AuthController(AuthService auth) : Controller
         return RedirectToAction("Index", "Home");
     }
 
-    [HttpPost]
+    [HttpPost("register")]
     public async Task<IActionResult> Signup(SignupDto dto)
     {
         var result = await auth.Signup(dto);

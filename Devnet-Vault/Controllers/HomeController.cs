@@ -1,8 +1,8 @@
-using System.Diagnostics;
-using Devnet_Vault.Models;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Models;
+using System.Diagnostics;
 
-namespace Devnet_Vault.Controllers
+namespace Presentation.Controllers
 {
     public class HomeController : Controller
     {
