@@ -1,4 +1,4 @@
-﻿namespace Application.Interfaces;
+﻿namespace Application.Features.Common.Interfaces;
 
 public interface IRedisCacheService
 {

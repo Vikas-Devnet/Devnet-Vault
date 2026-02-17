@@ -1,5 +1,6 @@
-﻿using Application.Interfaces;
-using Application.Services;
+﻿using Application.Features.Account.Interfaces;
+using Application.Features.Account.Services;
+using Application.Features.Common.Interfaces;
 using Domain.Interfaces;
 using Infrastructure.Cache;
 using Infrastructure.Persistence;

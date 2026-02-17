@@ -1,4 +1,4 @@
-﻿namespace Application.Models.Common;
+﻿namespace Application.Features.Common.Models;
 
 public enum Roles
 {

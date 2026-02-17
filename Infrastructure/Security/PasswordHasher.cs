@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+﻿using Application.Features.Account.Interfaces;
 
 namespace Infrastructure.Security;
 

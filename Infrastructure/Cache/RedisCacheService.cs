@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+﻿using Application.Features.Common.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 

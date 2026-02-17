@@ -1,4 +1,4 @@
-﻿namespace Application.DTOs;
+﻿namespace Application.Features.Account.Dtos;
 
 public class SignupDto
 {

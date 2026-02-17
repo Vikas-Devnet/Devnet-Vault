@@ -1,6 +1,9 @@
 using Application.DI;
-using Application.Models.Common;
+using Application.Features.Common.Models;
 using Infrastructure.DI;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
