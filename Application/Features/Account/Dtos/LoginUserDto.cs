@@ -12,8 +12,4 @@ public class LoginUserDto
     [Required(ErrorMessage = "Password is required")]
     [RegularExpression(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{6,}$")]
     public required string Password { get; set; }
-
-    [Required]
-    [StringLength(50, MinimumLength = 6)]
-    public required string IPAddress { get; set; }
 }

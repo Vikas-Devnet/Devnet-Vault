@@ -1,8 +1,8 @@
 ﻿using Application.Features.Account.Interfaces;
-using Application.Features.Account.Services;
 using Application.Features.Common.Interfaces;
 using Domain.Interfaces;
 using Infrastructure.Cache;
+using Infrastructure.Email;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Security;
@@ -30,11 +30,13 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
 
         // Security
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
+        services.AddSingleton<IEmailQueue, EmailQueue>();
+        services.AddSingleton<EmailService>();
 
-        // Application services (optional: can be here or in Presentation layer)
-        services.AddScoped<AuthService>();
+        services.AddHostedService(provider => (EmailQueue)provider.GetRequiredService<IEmailQueue>());
 
         return services;
     }

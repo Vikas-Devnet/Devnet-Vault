@@ -20,8 +20,8 @@ namespace Infrastructure.Cache
         {
             var options = new DistributedCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow = absoluteExpireTime ?? TimeSpan.FromMinutes(60),
-                SlidingExpiration = unusedExpireTime ?? TimeSpan.FromMinutes(30)
+                AbsoluteExpirationRelativeToNow = absoluteExpireTime ?? TimeSpan.FromMinutes(5),
+                SlidingExpiration = unusedExpireTime ?? TimeSpan.FromMinutes(2)
             };
             var jsonData = JsonSerializer.SerializeToUtf8Bytes(value);
             await _cache.SetAsync(keyName, jsonData, options, ctx);

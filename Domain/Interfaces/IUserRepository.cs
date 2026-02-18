@@ -11,4 +11,5 @@ public interface IUserRepository
     Task<RefreshTokens?> SaveRefreshToken(RefreshTokens refreshTokens, CancellationToken ctx = default);
     Task<RefreshTokens?> UpdateNewRefreshToken(RefreshTokens refreshTokens, string ipAddress, CancellationToken ctx = default);
     Task<int> InvalidateLogDetails(bool logOutAllDevices, Guid userId, string ipAddress, CancellationToken ctx = default);
+    Task<bool> UpdatePassword(Guid userId, string password, string ipAddress, CancellationToken ctx = default);
 }

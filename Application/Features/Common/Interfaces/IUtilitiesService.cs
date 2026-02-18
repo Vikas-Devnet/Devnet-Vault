@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace Application.Features.Common.Interfaces;
 
 public interface IUtilitiesService
 {
     void TrimStrings<T>(T model);
+    string ExtractIpAddress(HttpContext httpContext);
 }

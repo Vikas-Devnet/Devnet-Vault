@@ -98,4 +98,29 @@ public class UserRepository(AppDbContext db) : IUserRepository
         }
     }
 
+    public async Task<bool> UpdatePassword(Guid userId, string password, string ipAddress, CancellationToken ctx = default)
+    {
+        using var trans = db.Database.BeginTransaction();
+        try
+        {
+            await db.RefreshTokens.Where(re => re.UserId == userId)
+                   .ExecuteUpdateAsync(r => r.SetProperty(x => x.IsRevoked, true)
+                   .SetProperty(x => x.UpdatedAt, DateTime.UtcNow)
+                   .SetProperty(x => x.UpdatedBy, ipAddress), ctx);
+
+            var changes = await db.UserMaster.Where(e => e.UserId == userId && e.IsDeleted == false && e.IsActive).ExecuteUpdateAsync(
+            x => x.SetProperty(y => y.PasswordHash, password)
+            .SetProperty(y => y.UpdatedAt, DateTime.UtcNow)
+            .SetProperty(y => y.UpdatedBy, ipAddress), ctx
+            );
+
+            return changes > 0;
+        }
+        catch (Exception)
+        {
+            db.ChangeTracker.Clear();
+            trans.Rollback();
+            throw;
+        }
+    }
 }

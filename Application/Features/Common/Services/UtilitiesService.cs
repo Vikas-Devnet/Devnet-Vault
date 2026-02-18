@@ -1,4 +1,5 @@
 ﻿using Application.Features.Common.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Features.Common.Services;
 
@@ -18,5 +19,10 @@ public class UtilitiesService : IUtilitiesService
                     prop.SetValue(model, value.Trim());
             }
         }
+    }
+
+    public string ExtractIpAddress(HttpContext httpContext)
+    {
+        return httpContext.Connection.RemoteIpAddress?.ToString()?.Trim() ?? string.Empty;
     }
 }
