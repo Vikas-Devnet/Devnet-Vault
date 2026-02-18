@@ -55,7 +55,7 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
         {
             UserId = user.UserId,
             RefreshToken = refreshToken,
-            ExpiryDate = DateTime.UtcNow.AddDays(7),
+            ExpiryDate = DateTime.UtcNow.AddDays(TimeConstants.RefreshTokenExpireTime),
             IPAddress = ipAddress,
             CreatedAt = DateTime.UtcNow,
             CreatedBy = "LoggedIn"
@@ -101,7 +101,7 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
         {
             UserId = userDetails.UserId,
             RefreshToken = newRefreshToken,
-            ExpiryDate = DateTime.UtcNow.AddDays(7),
+            ExpiryDate = DateTime.UtcNow.AddDays(TimeConstants.RefreshTokenExpireTime),
             IPAddress = ipAddress,
             CreatedAt = DateTime.UtcNow,
             CreatedBy = "RefreshToken"
@@ -143,7 +143,7 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
 
         if (user.IsActive)
             return ServiceResponseGenerator<string>.Failure("Account has been deactivated");
-        var otp = await _otpService.GenerateOtpAsync(user.UserId.ToString(), TimeSpan.FromMinutes(5), ctx);
+        var otp = await _otpService.GenerateOtpAsync(user.UserId.ToString(), TimeSpan.FromMinutes(TimeConstants.OtpExpireTime), ctx);
 
         if (otp == null)
             return ServiceResponseGenerator<string>.Failure("Failed to generate OTP");
@@ -156,7 +156,7 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
                 Dear {user.FullName},<br><br>
                 Your <b>One-Time Password (OTP)</b> for your vault app authentication is:<br><br>
                 <h2>{otp}</h2>
-                This OTP is valid for <b>5 minutes</b>.<br>
+                This OTP is valid for <b>{TimeConstants.OtpExpireTime} minutes</b>.<br>
                 Please do not share it with anyone.<br><br>
                 If you did not request this, please ignore this email.<br><br>
                 Regards,<br>

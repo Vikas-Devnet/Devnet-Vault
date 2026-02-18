@@ -1,6 +1,8 @@
 ﻿using Application.Features.Account.Dtos;
 using Application.Features.Account.Services;
 using Application.Features.Common.Interfaces;
+using Application.Features.Common.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -12,7 +14,7 @@ public class AccountController(AuthService _auth, IUtilitiesService _utilitiesSe
 {
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginUserDto loginUserDto)
+    public async Task<IActionResult> Login([FromBody] LoginUserDto loginUserDto)
     {
         _utilitiesService.TrimStrings(loginUserDto);
 
@@ -23,11 +25,11 @@ public class AccountController(AuthService _auth, IUtilitiesService _utilitiesSe
             return Ok(response);
         }
 
-        return BadRequest(response);
+        return Unauthorized(response);
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(SignupDto signUpDto)
+    public async Task<IActionResult> Register([FromBody] SignupDto signUpDto)
     {
         _utilitiesService.TrimStrings(signUpDto);
 
@@ -47,25 +49,30 @@ public class AccountController(AuthService _auth, IUtilitiesService _utilitiesSe
             SetTokenCookies(response.Result ?? throw new Exception("Token Details not found"));
             return Ok(response);
         }
-        return BadRequest(response);
+        return Unauthorized(response);
     }
 
-    [HttpGet("logout")]
-    public async Task<IActionResult> Logout(bool logOutAllDevices)
+    [HttpPost("logout")]
+    [Authorize]
+    public async Task<IActionResult> Logout([FromQuery] bool logOutAllDevices)
     {
-        var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value ?? string.Empty;
+        var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim))
+            return Unauthorized();
+
         var response = await _auth.LogOutUser(logOutAllDevices, _utilitiesService.ExtractIpAddress(HttpContext), userIdClaim, HttpContext.RequestAborted);
         if (response.IsSuccess)
         {
-            Response.Cookies.Delete("AccessToken");
-            Response.Cookies.Delete("RefreshAccessToken");
+            Response.Cookies.Delete(CookieConstants.RefreshToken);
+            Response.Cookies.Delete(CookieConstants.RefreshToken);
             return Ok(response);
         }
         return BadRequest(response);
     }
 
     [HttpGet("send-otp")]
-    public async Task<IActionResult> SendOtp(string email)
+    public async Task<IActionResult> SendOtp([FromQuery] string email)
     {
         var response = await _auth.SendAuthOtp(email, HttpContext.RequestAborted);
         if (response.IsSuccess)
@@ -75,7 +82,7 @@ public class AccountController(AuthService _auth, IUtilitiesService _utilitiesSe
     }
 
     [HttpPost("verify-otp")]
-    public async Task<IActionResult> VerifyOtp(OtpValidationDto otpDto)
+    public async Task<IActionResult> VerifyOtp([FromBody] OtpValidationDto otpDto)
     {
         _utilitiesService.TrimStrings(otpDto);
         var response = await _auth.ValidateAuthOtp(otpDto, HttpContext.RequestAborted);
@@ -86,7 +93,7 @@ public class AccountController(AuthService _auth, IUtilitiesService _utilitiesSe
     }
 
     [HttpPost("update-password")]
-    public async Task<IActionResult> UpdatePassword(LoginUserDto updatePasswordDto)
+    public async Task<IActionResult> UpdatePassword([FromBody] LoginUserDto updatePasswordDto)
     {
         _utilitiesService.TrimStrings(updatePasswordDto);
         var response = await _auth.ResetPassword(updatePasswordDto.Email, updatePasswordDto.Password,
@@ -120,9 +127,9 @@ public class AccountController(AuthService _auth, IUtilitiesService _utilitiesSe
             Path = "/"
         };
 
-        Response.Cookies.Append("AccessToken", token.AccessToken, accessTokenOptions);
+        Response.Cookies.Append(CookieConstants.AccessToken, token.AccessToken, accessTokenOptions);
 
-        Response.Cookies.Append("RefreshAccessToken", token.AccessRefreshToken, refreshTokenOptions);
+        Response.Cookies.Append(CookieConstants.RefreshToken, token.AccessRefreshToken, refreshTokenOptions);
     }
 
 }

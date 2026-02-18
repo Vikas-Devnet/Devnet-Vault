@@ -14,9 +14,13 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+var allowedOrigins = builder.Configuration
+    .GetSection("CorsSettings:AllowedOrigins")
+    .Get<string[]>() ?? [];
+
 builder.Services.AddCors(option => option.AddPolicy("Allow_Vault_Client", policy =>
 {
-    policy.WithOrigins("https://abc.com")
+    policy.WithOrigins(allowedOrigins)
     .AllowAnyHeader()
     .AllowAnyMethod()
     .AllowCredentials();
@@ -33,7 +37,12 @@ builder.Services.AddAuthentication(options =>
     {
         OnMessageReceived = context =>
         {
-            context.Token = context.Request.Cookies["AccessToken"];
+            var token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+                token = context.Request.Cookies["AccessToken"];
+
+            context.Token = token;
             return Task.CompletedTask;
         }
     };
