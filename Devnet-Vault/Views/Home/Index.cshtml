@@ -1,8 +1,281 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Vault";
+    Layout = "_Layout";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- ===== HERO SECTION ===== -->
+<section class="vault-section bg-vault">
+    <div class="container-xl">
+        <div class="row align-items-center g-5">
+
+            <!-- Text -->
+            <div class="col-lg-5 vault-animate">
+                <span class="vault-badge mb-3">All-in-one storage</span>
+                <h1 class="vault-h1 mt-2 mb-4">
+                    Tired with multiple apps to store files, images, passwords.
+                </h1>
+                <p class="vault-body mb-5">
+                    Store, share, and collaborate on files and folders from your mobile device,
+                    tablet, or computer. Also store your important passwords right at one place.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="#" class="btn-vault-primary vault-animate vault-delay-1">
+                        <i class="bi bi-rocket-takeoff-fill"></i> Go to the app
+                    </a>
+                    <a href="#" class="btn-vault-outline vault-animate vault-delay-2">
+                        <i class="bi bi-download"></i> Download App
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hero Illustration -->
+            <div class="col-lg-7 vault-animate vault-delay-2">
+                <div class="vault-img-frame p-4 p-md-5"
+                     style="background: linear-gradient(135deg, #6b82c0, #e0e7ff);">
+                    <svg viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" class="w-100">
+                        <!-- Phone/tablet mockup -->
+                        <rect x="280" y="20" width="200" height="280" rx="20" fill="#dbeafe" stroke="#93c5fd" stroke-width="2" />
+                        <rect x="295" y="50" width="170" height="130" rx="8" fill="#fff" />
+                        <!-- person silhouette -->
+                        <circle cx="140" cy="80" r="30" fill="#bfdbfe" />
+                        <rect x="100" y="120" width="80" height="120" rx="10" fill="#93c5fd" />
+                        <!-- file cards -->
+                        <rect x="300" y="60" width="75" height="50" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5" />
+                        <rect x="385" y="60" width="70" height="50" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5" />
+                        <rect x="300" y="120" width="155" height="50" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5" />
+                        <!-- password dots -->
+                        <circle cx="312" cy="195" r="5" fill="#2563EB" />
+                        <circle cx="330" cy="195" r="5" fill="#2563EB" />
+                        <circle cx="348" cy="195" r="5" fill="#6366F1" />
+                        <circle cx="366" cy="195" r="5" fill="#2563EB" />
+                        <!-- lines representing text -->
+                        <rect x="300" y="220" width="100" height="8" rx="4" fill="#bfdbfe" />
+                        <rect x="300" y="235" width="140" height="8" rx="4" fill="#e0e7ff" />
+                        <rect x="300" y="250" width="80" height="8" rx="4" fill="#bfdbfe" />
+                        <!-- Cloud icon top -->
+                        <ellipse cx="450" cy="42" rx="35" ry="18" fill="#2563EB" opacity=".15" />
+                        <ellipse cx="450" cy="42" rx="22" ry="14" fill="#2563EB" opacity=".3" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FEATURES STRIP ===== -->
+<section class="vault-section-sm bg-vault-surface">
+    <div class="container-xl">
+        <div class="row g-4 text-center">
+            <div class="col-6 col-md-3 vault-animate">
+                <div class="vault-icon-circle mx-auto mb-3"><i class="bi bi-folder2-open"></i></div>
+                <p class="fw-semibold mb-1" style="color:var(--color-secondary)">File Storage</p>
+                <p class="vault-body-sm">All formats, any size</p>
+            </div>
+            <div class="col-6 col-md-3 vault-animate vault-delay-1">
+                <div class="vault-icon-circle mx-auto mb-3"><i class="bi bi-key-fill"></i></div>
+                <p class="fw-semibold mb-1" style="color:var(--color-secondary)">Password Vault</p>
+                <p class="vault-body-sm">Encrypted &amp; safe</p>
+            </div>
+            <div class="col-6 col-md-3 vault-animate vault-delay-2">
+                <div class="vault-icon-circle mx-auto mb-3"><i class="bi bi-share-fill"></i></div>
+                <p class="fw-semibold mb-1" style="color:var(--color-secondary)">Easy Sharing</p>
+                <p class="vault-body-sm">Collaborate instantly</p>
+            </div>
+            <div class="col-6 col-md-3 vault-animate vault-delay-3">
+                <div class="vault-icon-circle mx-auto mb-3"><i class="bi bi-cloud-check-fill"></i></div>
+                <p class="fw-semibold mb-1" style="color:var(--color-secondary)">Cross-platform</p>
+                <p class="vault-body-sm">Mobile, tablet, desktop</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SECURITY SECTION ===== -->
+<section class="vault-section bg-vault">
+    <div class="container-xl">
+        <div class="row align-items-center g-5">
+
+            <!-- Dark illustration card -->
+            <div class="col-lg-6 vault-animate">
+                <div class="vault-card-dark p-5" style="min-height: 320px; position: relative; overflow:hidden;">
+                    <!-- Glow blobs -->
+                    <div style="position:absolute;top:-40px;left:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,#4F46E5 0%,transparent 70%);opacity:.4;"></div>
+                    <div style="position:absolute;bottom:-30px;right:-30px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,#2563EB 0%,transparent 70%);opacity:.35;"></div>
+
+                    <div class="d-flex flex-column align-items-center justify-content-center h-100 position-relative" style="min-height:260px;">
+                        <!-- floating chips -->
+                        <div class="d-flex gap-2 mb-4 flex-wrap justify-content-center">
+                            <span style="background:rgba(99,102,241,.25);color:#a5b4fc;padding:.3rem .8rem;border-radius:var(--r-full);font-size:.75rem;backdrop-filter:blur(4px);">
+                                <i class="bi bi-image-fill me-1"></i> photo.jpg
+                            </span>
+                            <span style="background:rgba(37,99,235,.25);color:#93c5fd;padding:.3rem .8rem;border-radius:var(--r-full);font-size:.75rem;backdrop-filter:blur(4px);">
+                                <i class="bi bi-credit-card-fill me-1"></i> passwords
+                            </span>
+                        </div>
+
+                        <!-- Central shield -->
+                        <div style="font-size:5rem;color:#6366F1;line-height:1;">
+                            <i class="bi bi-shield-lock-fill"></i>
+                        </div>
+                        <div class="mt-3 d-flex gap-2">
+                            <span style="width:10px;height:10px;border-radius:50%;background:#2563EB;display:inline-block;"></span>
+                            <span style="width:10px;height:10px;border-radius:50%;background:#6366F1;display:inline-block;"></span>
+                            <span style="width:10px;height:10px;border-radius:50%;background:#818cf8;display:inline-block;"></span>
+                            <span style="width:10px;height:10px;border-radius:50%;background:#4f46e5;display:inline-block;"></span>
+                        </div>
+
+                        <!-- person pointer -->
+                        <div style="position:absolute;bottom:0;left:20px;">
+                            <svg width="80" height="100" viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="40" cy="20" r="16" fill="#6366F1" opacity=".7" />
+                                <rect x="20" y="42" width="40" height="55" rx="10" fill="#4F46E5" opacity=".6" />
+                                <line x1="55" y1="55" x2="75" y2="40" stroke="#818cf8" stroke-width="2" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text -->
+            <div class="col-lg-6 vault-animate vault-delay-1">
+                <span class="vault-badge mb-3">End-to-end Encrypted</span>
+                <h2 class="vault-h2 mt-2 mb-4">
+                    Believe us. We don't open your front camera.
+                </h2>
+                <p class="vault-body mb-5">
+                    Files and passwords are encrypted before storing. Vault uses multi-level
+                    encryption technology making sure private things remain private — always.
+                </p>
+                <div class="d-flex flex-column gap-3">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="vault-icon-circle flex-shrink-0"><i class="bi bi-lock-fill"></i></div>
+                        <div>
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary)">AES-256 Encryption</p>
+                            <p class="vault-body-sm">Military-grade encryption before any file touches the cloud.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="vault-icon-circle flex-shrink-0"><i class="bi bi-eye-slash-fill"></i></div>
+                        <div>
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary)">Zero-knowledge Policy</p>
+                            <p class="vault-body-sm">We cannot see your data. Period.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== COMMUNITY SECTION ===== -->
+<section class="vault-section bg-vault-alt">
+    <div class="container-xl">
+        <div class="row align-items-center g-5">
+
+            <!-- Text -->
+            <div class="col-lg-6 order-2 order-lg-1 vault-animate">
+                <span class="vault-badge mb-3">Community</span>
+                <h2 class="vault-h2 mt-2 mb-4">
+                    I don't have friends, I got family.
+                </h2>
+                <p class="vault-body mb-4">
+                    Become part of Devnet family and access tools you imagined having in your life
+                    before. We don't just say family — we'll be there for you at every file you
+                    upload, every password you save.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="#" class="btn-vault-primary">
+                        <i class="bi bi-people-fill"></i> Join the family
+                    </a>
+                </div>
+            </div>
+
+            <!-- Illustration -->
+            <div class="col-lg-6 order-1 order-lg-2 vault-animate vault-delay-1">
+                <div class="vault-img-frame p-4" style="background:linear-gradient(135deg,#fef3c7,#ede9fe);">
+                    <svg viewBox="0 0 480 280" xmlns="http://www.w3.org/2000/svg" class="w-100">
+                        <!-- Sofa -->
+                        <rect x="40" y="180" width="400" height="70" rx="20" fill="#c4b5fd" />
+                        <rect x="30" y="160" width="60" height="90" rx="12" fill="#a78bfa" />
+                        <rect x="390" y="160" width="60" height="90" rx="12" fill="#a78bfa" />
+                        <rect x="40" y="140" width="400" height="50" rx="12" fill="#ddd6fe" />
+                        <!-- Person 1 -->
+                        <circle cx="160" cy="110" r="28" fill="#fbbf24" />
+                        <rect x="130" y="145" width="60" height="80" rx="12" fill="#f59e0b" />
+                        <!-- Person 2 -->
+                        <circle cx="280" cy="100" r="28" fill="#34d399" />
+                        <rect x="250" y="135" width="60" height="80" rx="12" fill="#10b981" />
+                        <!-- Person 3 (kid) -->
+                        <circle cx="380" cy="130" r="22" fill="#fb923c" />
+                        <rect x="357" y="158" width="46" height="65" rx="10" fill="#f97316" />
+                        <!-- Chat bubble -->
+                        <ellipse cx="220" cy="55" rx="55" ry="26" fill="#a7f3d0" />
+                        <text x="220" y="62" text-anchor="middle" font-size="13" fill="#065f46" font-family="sans-serif">Hello 👋</text>
+                        <!-- Icons -->
+                        <text x="350" y="80" font-size="22" fill="#f43f5e">♥</text>
+                        <text x="90" y="75" font-size="20" fill="#6366F1">💬</text>
+                        <text x="420" y="115" font-size="18" fill="#f59e0b">★</text>
+                        <!-- Laptop -->
+                        <rect x="115" y="195" width="90" height="55" rx="6" fill="#1e293b" />
+                        <rect x="110" y="248" width="100" height="8" rx="4" fill="#334155" />
+                        <!-- Phone -->
+                        <rect x="330" y="175" width="40" height="65" rx="8" fill="#1e293b" />
+                        <rect x="335" y="183" width="30" height="45" rx="4" fill="#38bdf8" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CTA BANNER ===== -->
+<section class="vault-section-sm"
+         style="background: linear-gradient(135deg, var(--color-primary), #6366F1);">
+    <div class="container-xl text-center">
+        <h2 class="vault-h2 vault-animate mb-3" style="color:#fff;">
+            Ready to simplify your digital life?
+        </h2>
+        <p class="vault-body vault-animate vault-delay-1 mb-5"
+           style="color:rgba(255,255,255,.8); max-width:500px; margin:0 auto 2rem;">
+            Join thousands of users who trust Vault to keep their files and passwords secure.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap vault-animate vault-delay-2">
+            <a href="#" class="btn-vault-primary"
+               style="background:#fff; color:var(--color-primary)!important; border-color:#fff;">
+                <i class="bi bi-rocket-takeoff-fill"></i> Get Started Free
+            </a>
+            <a href="#" class="btn-vault-outline"
+               style="border-color:rgba(255,255,255,.6); color:#fff!important;">
+                <i class="bi bi-download"></i> Download App
+            </a>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(function () {
+            if ('IntersectionObserver' in window) {
+                const io = new IntersectionObserver((entries) => {
+                    entries.forEach(e => {
+                        if (e.isIntersecting) {
+                            e.target.style.opacity = '1';
+                            e.target.style.transform = 'translateY(0)';
+                            io.unobserve(e.target);
+                        }
+                    });
+                }, { threshold: 0.15 });
+
+                document.querySelectorAll('.vault-animate').forEach(el => {
+                    // Only re-register elements that haven't already been handled
+                    if (el.style.opacity !== '1') {
+                        el.style.opacity = '0';
+                        el.style.transform = 'translateY(28px)';
+                        el.style.transition = 'opacity .55s ease, transform .55s ease';
+                        io.observe(el);
+                    }
+                });
+            }
+        });
+    </script>
+}

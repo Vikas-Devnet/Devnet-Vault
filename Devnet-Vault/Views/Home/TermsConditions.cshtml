@@ -1,0 +1,619 @@
+﻿@{
+    ViewData["Title"] = "Vault- T&C";
+    Layout = "_Layout";
+}
+
+<!-- ===== HERO ===== -->
+<section class="vault-section-sm bg-vault">
+    <div class="container-xl">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-7 vault-animate">
+                <div class="vault-icon-circle mx-auto mb-4"
+                     style="width:64px;height:64px;font-size:1.6rem;
+                            background:linear-gradient(135deg,#1D4ED8,#6366F1);color:#fff;">
+                    <i class="bi bi-file-earmark-text-fill"></i>
+                </div>
+                <span class="vault-badge mb-3">Legal</span>
+                <h1 class="vault-h1 mt-2 mb-3">Terms &amp; Conditions</h1>
+                <p class="vault-body" style="max-width:540px;margin:0 auto;">
+                    Please read these terms carefully before using Devnet Vault. By accessing
+                    or using our service you agree to be bound by them.
+                </p>
+                <p class="vault-body-sm mt-3" style="color:var(--color-text-muted);">
+                    Last updated: <strong>@ViewBag.TermsConditionUpdatedDate</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== QUICK HIGHLIGHTS ===== -->
+<section class="vault-section-sm bg-vault-surface">
+    <div class="container-xl">
+        <div class="row g-4 justify-content-center">
+
+            <div class="col-sm-6 col-lg-3 vault-animate">
+                <div class="vault-card p-4 h-100 text-center">
+                    <div class="vault-icon-circle mx-auto mb-3">
+                        <i class="bi bi-person-check-fill"></i>
+                    </div>
+                    <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Age Requirement</p>
+                    <p class="vault-body-sm">You must be at least 13 years old to use Vault.</p>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3 vault-animate vault-delay-1">
+                <div class="vault-card p-4 h-100 text-center">
+                    <div class="vault-icon-circle mx-auto mb-3">
+                        <i class="bi bi-shield-fill-check"></i>
+                    </div>
+                    <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Your Content</p>
+                    <p class="vault-body-sm">You own your data. We never claim rights to it.</p>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3 vault-animate vault-delay-2">
+                <div class="vault-card p-4 h-100 text-center">
+                    <div class="vault-icon-circle mx-auto mb-3">
+                        <i class="bi bi-ban"></i>
+                    </div>
+                    <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Fair Use</p>
+                    <p class="vault-body-sm">No illegal content, abuse, or misuse of the platform.</p>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3 vault-animate vault-delay-3">
+                <div class="vault-card p-4 h-100 text-center">
+                    <div class="vault-icon-circle mx-auto mb-3">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </div>
+                    <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Termination</p>
+                    <p class="vault-body-sm">Either party may terminate at any time, no questions asked.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ===== TERMS CONTENT ===== -->
+<section class="vault-section bg-vault">
+    <div class="container-xl">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <!-- Table of Contents -->
+                <div class="vault-card p-4 mb-5 vault-animate">
+                    <p class="fw-semibold mb-3" style="color:var(--color-secondary);">
+                        <i class="bi bi-list-ul me-2 text-vault-primary"></i>Table of Contents
+                    </p>
+                    <ol class="mb-0 ps-3" style="color:var(--color-text-secondary); line-height:2;">
+                        <li><a href="#section-acceptance" class="toc-link">Acceptance of Terms</a></li>
+                        <li><a href="#section-eligibility" class="toc-link">Eligibility</a></li>
+                        <li><a href="#section-account" class="toc-link">Account Responsibilities</a></li>
+                        <li><a href="#section-ownership" class="toc-link">Ownership &amp; Licenses</a></li>
+                        <li><a href="#section-acceptable" class="toc-link">Acceptable Use</a></li>
+                        <li><a href="#section-plans" class="toc-link">Plans, Payments &amp; Refunds</a></li>
+                        <li><a href="#section-availability" class="toc-link">Service Availability</a></li>
+                        <li><a href="#section-disclaimer" class="toc-link">Disclaimers &amp; Liability</a></li>
+                        <li><a href="#section-indemnity" class="toc-link">Indemnification</a></li>
+                        <li><a href="#section-termination" class="toc-link">Termination</a></li>
+                        <li><a href="#section-governing" class="toc-link">Governing Law</a></li>
+                        <li><a href="#section-changes" class="toc-link">Changes to Terms</a></li>
+                    </ol>
+                </div>
+
+                <!-- 1. Acceptance -->
+                <div id="section-acceptance" class="policy-section vault-animate">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="vault-icon-circle flex-shrink-0"><i class="bi bi-check-circle-fill"></i></div>
+                        <h2 class="vault-h2 mb-0">1. Acceptance of Terms</h2>
+                    </div>
+                    <div class="policy-body">
+                        <p class="vault-body">
+                            By creating an account, downloading the Devnet Vault application, or otherwise
+                            accessing any part of the Vault service (the <strong>"Service"</strong>), you
+                            confirm that you have read, understood, and agree to be bound by these Terms &amp;
+                            Conditions (<strong>"Terms"</strong>) and our
+                            <a href="/Home/Privacy" style="color:var(--color-primary);">Privacy Policy</a>,
+                            which is incorporated into these Terms by reference.
+                        </p>
+                        <p class="vault-body">
+                            If you do not agree to these Terms, you must immediately stop using the Service.
+                            Devnet (<strong>"Devnet"</strong>, <strong>"we"</strong>,
+                            <strong>"us"</strong>, or <strong>"our"</strong>) reserves the right to modify
+                            these Terms at any time.
+                        </p>
+                    </div>
+                </div>
+
+                <hr class="vault-divider my-5" />
+
+                <!-- 2. Eligibility -->
+                <div id="section-eligibility" class="policy-section vault-animate">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="vault-icon-circle flex-shrink-0"><i class="bi bi-person-fill"></i></div>
+                        <h2 class="vault-h2 mb-0">2. Eligibility</h2>
+                    </div>
+                    <div class="policy-body">
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Minimum Age</p>
+                            <p class="vault-body-sm">
+                                You must be at least 13 years of age to use the Service. If you are between
+                                13 and 18 years of age, you represent that your parent or legal guardian has
+                                reviewed and agreed to these Terms on your behalf.
+                            </p>
+                        </div>
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Legal Capacity</p>
+                            <p class="vault-body-sm">
+                                By using the Service, you represent that you have the full legal capacity to
+                                enter into a binding contract in your jurisdiction and that you are not
+                                prohibited from doing so by any applicable law.
+                            </p>
+                        </div>
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Geographic Restrictions</p>
+                            <p class="vault-body-sm">
+                                The Service is intended for global use but may not be available in all
+                                jurisdictions. You are responsible for ensuring your use complies with local
+                                laws and regulations.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="vault-divider my-5" />
+
+                <!-- 3. Account Responsibilities -->
+                <div id="section-account" class="policy-section vault-animate">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="vault-icon-circle flex-shrink-0"><i class="bi bi-key-fill"></i></div>
+                        <h2 class="vault-h2 mb-0">3. Account Responsibilities</h2>
+                    </div>
+                    <div class="policy-body">
+                        <div class="vault-card-dark p-4 mb-4" style="border-radius:var(--r-lg);">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <i class="bi bi-exclamation-triangle-fill" style="font-size:1.3rem;color:#fbbf24;"></i>
+                                <p class="fw-semibold mb-0" style="color:#fff;">Master Password Warning</p>
+                            </div>
+                            <p class="vault-body-sm mb-0" style="color:rgba(255,255,255,.75);">
+                                Due to our zero-knowledge architecture, Devnet cannot recover your master
+                                password under any circumstances. If you lose it, your encrypted data
+                                is permanently inaccessible. Keep your credentials safe.
+                            </p>
+                        </div>
+
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Account Security</p>
+                            <p class="vault-body-sm">
+                                You are solely responsible for maintaining the confidentiality of your login
+                                credentials and for all activity that occurs under your account. Notify us
+                                immediately at
+                                <a href="mailto:@ViewBag.SupportEmailAddress" style="color:var(--color-primary);">@ViewBag.SupportEmailAddress</a>
+                                if you suspect unauthorised access.
+                            </p>
+                        </div>
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Accurate Information</p>
+                            <p class="vault-body-sm">
+                                You agree to provide accurate, current, and complete information during
+                                registration and to update it as necessary to keep it accurate.
+                            </p>
+                        </div>
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">One Account Per User</p>
+                            <p class="vault-body-sm">
+                                Each person may maintain only one free account. Creating multiple accounts
+                                to circumvent storage or feature limits is prohibited.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="vault-divider my-5" />
+
+                <!-- 4. Ownership & Licenses -->
+                <div id="section-ownership" class="policy-section vault-animate">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="vault-icon-circle flex-shrink-0"><i class="bi bi-patch-check-fill"></i></div>
+                        <h2 class="vault-h2 mb-0">4. Ownership &amp; Licenses</h2>
+                    </div>
+                    <div class="policy-body">
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Your Content</p>
+                            <p class="vault-body-sm">
+                                You retain full ownership of all files, passwords, and data you store
+                                through the Service (<strong>"Your Content"</strong>). We claim no
+                                intellectual property rights over Your Content.
+                            </p>
+                        </div>
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Limited License to Us</p>
+                            <p class="vault-body-sm">
+                                You grant Devnet a limited, non-exclusive, royalty-free licence solely to
+                                store, transmit, and technically process Your Content for the purpose of
+                                providing the Service. This licence terminates when you delete the content
+                                or close your account.
+                            </p>
+                        </div>
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Our Intellectual Property</p>
+                            <p class="vault-body-sm">
+                                The Vault application, website, design, trademarks, and all underlying
+                                technology are owned by Devnet and protected by applicable intellectual
+                                property laws. You may not copy, modify, distribute, or reverse-engineer
+                                any part of the Service without our express written consent.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="vault-divider my-5" />
+
+                <!-- 5. Acceptable Use -->
+                <div id="section-acceptable" class="policy-section vault-animate">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="vault-icon-circle flex-shrink-0"><i class="bi bi-shield-exclamation"></i></div>
+                        <h2 class="vault-h2 mb-0">5. Acceptable Use</h2>
+                    </div>
+                    <div class="policy-body">
+                        <p class="vault-body">You agree <strong>not</strong> to use the Service to:</p>
+
+                        <div class="row g-3 mt-1">
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="bi bi-x-circle-fill mt-1 flex-shrink-0" style="color:#ef4444;"></i>
+                                    <p class="vault-body-sm mb-0">Store, transmit, or distribute illegal content of any kind.</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="bi bi-x-circle-fill mt-1 flex-shrink-0" style="color:#ef4444;"></i>
+                                    <p class="vault-body-sm mb-0">Upload malware, viruses, or any malicious code.</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="bi bi-x-circle-fill mt-1 flex-shrink-0" style="color:#ef4444;"></i>
+                                    <p class="vault-body-sm mb-0">Attempt to gain unauthorised access to other accounts or our infrastructure.</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="bi bi-x-circle-fill mt-1 flex-shrink-0" style="color:#ef4444;"></i>
+                                    <p class="vault-body-sm mb-0">Conduct denial-of-service attacks or otherwise disrupt the Service.</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="bi bi-x-circle-fill mt-1 flex-shrink-0" style="color:#ef4444;"></i>
+                                    <p class="vault-body-sm mb-0">Scrape, index, or harvest data from the Service using automated tools.</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="bi bi-x-circle-fill mt-1 flex-shrink-0" style="color:#ef4444;"></i>
+                                    <p class="vault-body-sm mb-0">Resell, sublicense, or commercially exploit the Service without authorisation.</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="bi bi-x-circle-fill mt-1 flex-shrink-0" style="color:#ef4444;"></i>
+                                    <p class="vault-body-sm mb-0">Impersonate Devnet, its employees, or any other person or entity.</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="bi bi-x-circle-fill mt-1 flex-shrink-0" style="color:#ef4444;"></i>
+                                    <p class="vault-body-sm mb-0">Violate any applicable local, national, or international laws or regulations.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="vault-body-sm mt-4">
+                            Devnet reserves the right to suspend or terminate accounts that violate these
+                            rules immediately and without prior notice.
+                        </p>
+                    </div>
+                </div>
+
+                <hr class="vault-divider my-5" />
+
+                <!-- 6. Plans, Payments & Refunds -->
+                <div id="section-plans" class="policy-section vault-animate">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="vault-icon-circle flex-shrink-0"><i class="bi bi-credit-card-fill"></i></div>
+                        <h2 class="vault-h2 mb-0">6. Plans, Payments &amp; Refunds</h2>
+                    </div>
+                    <div class="policy-body">
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Free Plan</p>
+                            <p class="vault-body-sm">
+                                Vault offers a free tier with limited storage and features. We reserve the
+                                right to modify free tier limits at any time with 30 days' notice.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="vault-divider my-5" />
+
+                <!-- 7. Service Availability -->
+                <div id="section-availability" class="policy-section vault-animate">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="vault-icon-circle flex-shrink-0"><i class="bi bi-cloud-fill"></i></div>
+                        <h2 class="vault-h2 mb-0">7. Service Availability</h2>
+                    </div>
+                    <div class="policy-body">
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Uptime</p>
+                            <p class="vault-body-sm">
+                                We target 99.9% monthly uptime but do not guarantee uninterrupted access.
+                                Scheduled maintenance will be communicated in advance where possible.
+                            </p>
+                        </div>
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Modifications</p>
+                            <p class="vault-body-sm">
+                                We reserve the right to modify, suspend, or discontinue any feature or aspect
+                                of the Service at any time. Where feasible, we will provide reasonable notice
+                                before significant changes.
+                            </p>
+                        </div>
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Data Backup</p>
+                            <p class="vault-body-sm">
+                                While we implement robust backup procedures, we strongly recommend that you
+                                maintain independent copies of any critical data stored in Vault. We are not
+                                liable for data loss resulting from hardware failure, force majeure, or
+                                similar events beyond our reasonable control.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="vault-divider my-5" />
+
+                <!-- 8. Disclaimers & Liability -->
+                <div id="section-disclaimer" class="policy-section vault-animate">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="vault-icon-circle flex-shrink-0"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                        <h2 class="vault-h2 mb-0">8. Disclaimers &amp; Liability</h2>
+                    </div>
+                    <div class="policy-body">
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">As-Is Service</p>
+                            <p class="vault-body-sm">
+                                The Service is provided <strong>"as is"</strong> and <strong>"as available"</strong>
+                                without warranties of any kind, express or implied, including but not limited to
+                                implied warranties of merchantability, fitness for a particular purpose, or
+                                non-infringement.
+                            </p>
+                        </div>
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Limitation of Liability</p>
+                            <p class="vault-body-sm">
+                                To the fullest extent permitted by law, Devnet shall not be liable for
+                                any indirect, incidental, special, consequential, or punitive damages
+                                (including loss of data, revenue, or profits) arising from your use of or
+                                inability to use the Service, even if we have been advised of the possibility
+                                of such damages.
+                            </p>
+                        </div>
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Liability Cap</p>
+                            <p class="vault-body-sm">
+                                Our total aggregate liability to you for any claim arising out of or relating
+                                to these Terms or the Service shall not exceed the greater of (a) the total
+                                fees paid by you to Devnet in the 12 months preceding the claim, or
+                                (b) USD $50.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="vault-divider my-5" />
+
+                <!-- 9. Indemnification -->
+                <div id="section-indemnity" class="policy-section vault-animate">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="vault-icon-circle flex-shrink-0"><i class="bi bi-umbrella-fill"></i></div>
+                        <h2 class="vault-h2 mb-0">9. Indemnification</h2>
+                    </div>
+                    <div class="policy-body">
+                        <p class="vault-body">
+                            You agree to defend, indemnify, and hold harmless Devnet and its officers,
+                            directors, employees, and agents from and against any claims, liabilities,
+                            damages, judgements, awards, losses, costs, or expenses (including reasonable
+                            legal fees) arising out of or relating to:
+                        </p>
+                        <div class="row g-3 mt-1">
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="bi bi-dot mt-0 flex-shrink-0 fs-4" style="color:var(--color-primary);"></i>
+                                    <p class="vault-body-sm mb-0">Your violation of these Terms.</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="bi bi-dot mt-0 flex-shrink-0 fs-4" style="color:var(--color-primary);"></i>
+                                    <p class="vault-body-sm mb-0">Your violation of any third-party rights, including intellectual property rights.</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="bi bi-dot mt-0 flex-shrink-0 fs-4" style="color:var(--color-primary);"></i>
+                                    <p class="vault-body-sm mb-0">Any content you store or share through the Service.</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="bi bi-dot mt-0 flex-shrink-0 fs-4" style="color:var(--color-primary);"></i>
+                                    <p class="vault-body-sm mb-0">Your use of the Service in violation of any applicable law or regulation.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="vault-divider my-5" />
+
+                <!-- 10. Termination -->
+                <div id="section-termination" class="policy-section vault-animate">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="vault-icon-circle flex-shrink-0"><i class="bi bi-x-circle-fill"></i></div>
+                        <h2 class="vault-h2 mb-0">10. Termination</h2>
+                    </div>
+                    <div class="policy-body">
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">By You</p>
+                            <p class="vault-body-sm">
+                                You may close your account at any time from account settings. Upon closure,
+                                your encrypted data will be permanently deleted within 30 days.
+                            </p>
+                        </div>
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">By Devnet</p>
+                            <p class="vault-body-sm">
+                                We may suspend or terminate your account immediately, without prior notice
+                                or liability, if you breach these Terms, engage in fraudulent activity, or
+                                if we are required to do so by law. We will make reasonable efforts to
+                                notify you where legally permitted.
+                            </p>
+                        </div>
+                        <div class="policy-item">
+                            <p class="fw-semibold mb-1" style="color:var(--color-secondary);">Effect of Termination</p>
+                            <p class="vault-body-sm">
+                                All provisions of these Terms which by their nature should survive termination
+                                — including ownership, disclaimers, indemnity, and limitations of liability —
+                                shall survive.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="vault-divider my-5" />
+
+                <!-- 11. Governing Law -->
+                <div id="section-governing" class="policy-section vault-animate">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="vault-icon-circle flex-shrink-0"><i class="bi bi-globe-americas"></i></div>
+                        <h2 class="vault-h2 mb-0">11. Governing Law</h2>
+                    </div>
+                    <div class="policy-body">
+                        <p class="vault-body">
+                            These Terms shall be governed by and construed in accordance with the laws of
+                            the jurisdiction in which Devnet is incorporated, without regard to its
+                            conflict of law provisions. Any dispute arising under these Terms shall be
+                            subject to the exclusive jurisdiction of the courts in that jurisdiction,
+                            and you consent to personal jurisdiction therein.
+                        </p>
+                        <p class="vault-body">
+                            For users in the European Union, nothing in these Terms limits your rights
+                            under applicable EU consumer protection or data protection laws.
+                        </p>
+                    </div>
+                </div>
+
+                <hr class="vault-divider my-5" />
+
+                <!-- 12. Changes -->
+                <div id="section-changes" class="policy-section vault-animate">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="vault-icon-circle flex-shrink-0"><i class="bi bi-arrow-repeat"></i></div>
+                        <h2 class="vault-h2 mb-0">12. Changes to Terms</h2>
+                    </div>
+                    <div class="policy-body">
+                        <p class="vault-body">
+                            We reserve the right to update these Terms at any time. When we make material
+                            changes, we will notify you by email at least 14 days before the new Terms
+                            take effect and update the "Last updated" date at the top of this page.
+                            For minor changes (e.g. grammar corrections, clarifications), we may update
+                            without advance notice.
+                        </p>
+                        <p class="vault-body">
+                            Continued use of the Service after the effective date of revised Terms
+                            constitutes your acceptance of those changes. If you do not agree to the
+                            revised Terms, you must stop using the Service and may close your account.
+                        </p>
+                    </div>
+                </div>
+
+                <hr class="vault-divider my-5" />
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CTA BANNER ===== -->
+<section class="vault-section-sm"
+         style="background: linear-gradient(135deg, var(--color-primary), #6366F1);">
+    <div class="container-xl text-center">
+        <h2 class="vault-h2 vault-animate mb-3" style="color:#fff;">
+            Ready to get started?
+        </h2>
+        <p class="vault-body vault-animate vault-delay-1 mb-5"
+           style="color:rgba(255,255,255,.8); max-width:460px; margin:0 auto 2rem;">
+            By joining Vault you agree to these Terms. We keep them fair, clear, and on your side.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap vault-animate vault-delay-2">
+            <a href="#" class="btn-vault-primary"
+               style="background:#fff; color:var(--color-primary)!important; border-color:#fff;">
+                <i class="bi bi-rocket-takeoff-fill"></i> Get Started Free
+            </a>
+            <a asp-area="" asp-controller="Home" asp-action="Privacy"
+               class="btn-vault-outline"
+               style="border-color:rgba(255,255,255,.6); color:#fff!important;">
+                <i class="bi bi-shield-check-fill"></i> Read Privacy Policy
+            </a>
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        .policy-section {
+            margin-bottom: 1rem;
+        }
+
+        .policy-body {
+            padding-left: 1rem;
+        }
+
+        .policy-item {
+            border-left: 3px solid var(--color-primary-light);
+            padding: .75rem 1rem;
+            border-radius: 0 var(--r-sm) var(--r-sm) 0;
+            background: var(--color-surface);
+            margin-bottom: 1rem;
+        }
+
+        .toc-link {
+            color: var(--color-primary);
+            text-decoration: none;
+            transition: color var(--t-fast);
+        }
+
+            .toc-link:hover {
+                color: var(--color-primary-dark);
+                text-decoration: underline;
+            }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('a[href^="#"]').on('click', function (e) {
+                var target = $(this.getAttribute('href'));
+                if (target.length) {
+                    e.preventDefault();
+                    $('html, body').animate({
+                        scrollTop: target.offset().top - 90
+                    }, 400);
+                }
+            });
+        });
+    </script>
+}

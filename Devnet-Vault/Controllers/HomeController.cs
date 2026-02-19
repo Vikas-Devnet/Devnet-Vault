@@ -1,18 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Presentation.Models;
 using System.Diagnostics;
 
 namespace Presentation.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(IOptions<HomeSettings> _homeOptions) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
-
+        public HomeSettings homeSettings = _homeOptions.Value;
         public IActionResult Index()
         {
             return View();
@@ -20,6 +15,15 @@ namespace Presentation.Controllers
 
         public IActionResult Privacy()
         {
+            ViewBag.PrivacyPolicyUpdatedDate = homeSettings.PrivacyPolicyUpdatedDate;
+            ViewBag.SupportEmailAddress = homeSettings.SupportEmail;
+            return View();
+        }
+
+        public IActionResult TermsConditions()
+        {
+            ViewBag.TermsConditionUpdatedDate = homeSettings.PrivacyPolicyUpdatedDate;
+            ViewBag.SupportEmailAddress = homeSettings.SupportEmail;
             return View();
         }
 

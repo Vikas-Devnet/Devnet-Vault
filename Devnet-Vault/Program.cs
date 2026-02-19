@@ -4,6 +4,7 @@ using Infrastructure.DI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
+using Presentation.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.Configure<HomeSettings>(builder.Configuration.GetSection("HomeSettings"));
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -67,32 +69,6 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
 app.UseHttpsRedirection();
-
-app.Use(async (context, next) =>
-{
-    context.Response.Headers.ContentSecurityPolicy =
-
-        // 'self' = only allow resources from same domain, protocol, and port
-        "default-src 'self'; " +
-
-        // 'self' = allow scripts from your own server
-        "script-src 'self' https://cdn.jsdelivr.net https://code.jquery.com; " +
-
-        // Allows CSS from your server and jsdelivr CDN
-        "style-src 'self' https://cdn.jsdelivr.net; " +
-
-        // 'self' = allow calls to same domain API
-        "connect-src 'self' https://api.yourdomain.com; " +
-
-        // 'self' = allow images from your server
-        // data: = allow base64 images (example: inline images from database)
-        "img-src 'self' data:; " +
-
-        // 'none' = completely block iframe embedding
-        "frame-ancestors 'none';";
-
-    await next();
-});
 
 app.UseStaticFiles();
 app.UseRouting();
