@@ -58,7 +58,7 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["JwtSettings:Audience"],
         ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"] ?? throw new Exception("Issuer Key Not Found")))
+            Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"] ?? throw new Exception("Issuer Key Not Found")))
 
     };
 });

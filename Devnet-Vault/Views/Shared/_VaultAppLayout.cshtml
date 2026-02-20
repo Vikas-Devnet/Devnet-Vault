@@ -1,0 +1,929 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] – Vault</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
+
+    <style>
+        /* ════════════════════════════════════
+                   VAULT APP SHELL  (Drive-style)
+                ════════════════════════════════════ */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--color-bg);
+        }
+
+        /* ── Top Bar ── */
+        .vapp-topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            padding: 0 1.25rem 0 1rem;
+            gap: 1rem;
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Hamburger */
+        .vapp-hamburger {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 150ms;
+        }
+
+            .vapp-hamburger:hover {
+                background: var(--color-bg);
+            }
+
+        /* Logo + brand */
+        .vapp-brand {
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .vapp-brand-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563EB, #6366F1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: .9rem;
+        }
+
+        .vapp-brand-name {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--color-secondary);
+            letter-spacing: -.02em;
+        }
+
+        /* Search bar */
+        .vapp-search {
+            flex: 1;
+            max-width: 680px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+            .vapp-search input {
+                width: 100%;
+                padding: .6rem 1rem .6rem 2.8rem;
+                background: var(--color-bg);
+                border: 1.5px solid transparent;
+                border-radius: var(--r-full);
+                font-size: .9rem;
+                color: var(--color-text-primary);
+                font-family: inherit;
+                outline: none;
+                transition: border-color 150ms, background 150ms, box-shadow 150ms;
+            }
+
+                .vapp-search input:focus {
+                    background: #fff;
+                    border-color: var(--color-primary);
+                    box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+                }
+
+                .vapp-search input::placeholder {
+                    color: var(--color-text-muted);
+                }
+
+            .vapp-search .search-icon {
+                position: absolute;
+                left: .9rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--color-text-muted);
+                font-size: 1rem;
+                pointer-events: none;
+            }
+
+        /* Right side actions */
+        .vapp-topbar-right {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .vapp-icon-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: background 150ms;
+            position: relative;
+            text-decoration: none;
+        }
+
+            .vapp-icon-btn:hover {
+                background: var(--color-bg);
+                color: var(--color-primary);
+            }
+
+        .vapp-notif-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            border: 2px solid var(--color-surface);
+        }
+
+        /* Avatar / profile */
+        .vapp-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563EB, #6366F1);
+            color: #fff;
+            font-size: .85rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            border: 2px solid transparent;
+            transition: border-color 150ms;
+        }
+
+            .vapp-avatar:hover {
+                border-color: var(--color-primary);
+            }
+
+        /* Profile dropdown */
+        .vapp-profile-menu {
+            position: absolute;
+            top: 56px;
+            right: 1.25rem;
+            width: 280px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-xl);
+            z-index: 2000;
+            overflow: hidden;
+            display: none;
+            animation: dropIn .2s ease both;
+        }
+
+            .vapp-profile-menu.open {
+                display: block;
+            }
+        @@keyframes dropIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .vpm-header {
+            padding: 1.1rem 1.1rem .85rem;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+
+        .vpm-avatar-lg {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563EB, #6366F1);
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .vpm-name {
+            font-weight: 700;
+            color: var(--color-secondary);
+            font-size: .95rem;
+            line-height: 1.2;
+        }
+
+        .vpm-email {
+            font-size: .78rem;
+            color: var(--color-text-muted);
+        }
+
+        .vpm-item {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .7rem 1.1rem;
+            font-size: .875rem;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 150ms, color 150ms;
+        }
+
+            .vpm-item:hover {
+                background: var(--color-bg);
+                color: var(--color-primary);
+            }
+
+            .vpm-item i {
+                font-size: 1rem;
+                width: 20px;
+                text-align: center;
+            }
+
+        .vpm-divider {
+            height: 1px;
+            background: var(--color-border);
+            margin: .25rem 0;
+        }
+
+        .vpm-logout {
+            color: #dc2626 !important;
+        }
+
+            .vpm-logout:hover {
+                background: #fef2f2 !important;
+            }
+
+        /* ── SIDEBAR ── */
+        .vapp-sidebar {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            bottom: 0;
+            width: 256px;
+            background: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: .75rem .75rem 2rem;
+            z-index: 900;
+            transition: transform 350ms cubic-bezier(.4,0,.2,1), width 250ms ease;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-border) transparent;
+        }
+
+            .vapp-sidebar::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .vapp-sidebar::-webkit-scrollbar-thumb {
+                background: var(--color-border);
+                border-radius: 4px;
+            }
+
+            .vapp-sidebar.collapsed {
+                width: 72px;
+            }
+
+            .vapp-sidebar.mobile-hidden {
+                transform: translateX(-100%);
+            }
+
+        /* New button */
+        .vapp-new-btn {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            padding: .7rem 1.1rem;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--r-full);
+            font-size: .9rem;
+            font-weight: 600;
+            color: var(--color-secondary);
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: .75rem;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 150ms, background 150ms;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+            .vapp-new-btn:hover {
+                box-shadow: var(--shadow-md);
+                background: var(--color-bg);
+            }
+
+            .vapp-new-btn .new-icon {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #2563EB, #6366F1);
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1rem;
+                flex-shrink: 0;
+            }
+
+            .vapp-new-btn .new-label {
+                transition: opacity 200ms;
+            }
+
+        .vapp-sidebar.collapsed .new-label {
+            opacity: 0;
+            width: 0;
+        }
+
+        .vapp-sidebar.collapsed .vapp-new-btn {
+            padding: .7rem;
+            justify-content: center;
+        }
+
+        /* Nav section label */
+        .vapp-nav-label {
+            font-size: .68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--color-text-muted);
+            padding: .6rem .6rem .3rem;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: opacity 200ms;
+        }
+
+        .vapp-sidebar.collapsed .vapp-nav-label {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+        }
+
+        /* Nav items */
+        .vapp-nav-item {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .6rem .75rem;
+            border-radius: var(--r-md);
+            font-size: .9rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 150ms, color 150ms;
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+        }
+
+            .vapp-nav-item:hover {
+                background: var(--color-bg);
+                color: var(--color-primary);
+            }
+
+            .vapp-nav-item.active {
+                background: var(--color-primary-light);
+                color: var(--color-primary);
+                font-weight: 600;
+            }
+
+            .vapp-nav-item i {
+                font-size: 1.1rem;
+                width: 22px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+
+            .vapp-nav-item .nav-label {
+                transition: opacity 200ms;
+            }
+
+        .vapp-sidebar.collapsed .nav-label {
+            opacity: 0;
+            width: 0;
+        }
+
+        .vapp-sidebar.collapsed .vapp-nav-item {
+            justify-content: center;
+            padding: .6rem;
+        }
+        /* Badge on nav item */
+        .nav-badge {
+            margin-left: auto;
+            flex-shrink: 0;
+            background: var(--color-primary);
+            color: #fff;
+            font-size: .65rem;
+            font-weight: 700;
+            padding: .1rem .45rem;
+            border-radius: var(--r-full);
+            transition: opacity 200ms;
+        }
+
+        .vapp-sidebar.collapsed .nav-badge {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        /* Storage indicator */
+        .vapp-storage {
+            margin: 1rem .6rem 0;
+            transition: opacity 200ms;
+        }
+
+        .vapp-sidebar.collapsed .vapp-storage {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        .storage-label {
+            font-size: .75rem;
+            color: var(--color-text-muted);
+            margin-bottom: .4rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .storage-bar {
+            height: 5px;
+            background: var(--color-border);
+            border-radius: var(--r-full);
+            overflow: hidden;
+        }
+
+        .storage-fill {
+            height: 100%;
+            border-radius: var(--r-full);
+            background: linear-gradient(90deg, #2563EB, #6366F1);
+            transition: width .6s ease;
+        }
+
+        .storage-info {
+            font-size: .73rem;
+            color: var(--color-text-muted);
+            margin-top: .4rem;
+        }
+
+        /* ── MAIN CONTENT ── */
+        .vapp-main {
+            position: fixed;
+            top: 64px;
+            left: 256px;
+            right: 0;
+            bottom: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: var(--color-bg);
+            transition: left 250ms ease;
+        }
+
+        .vapp-sidebar.collapsed ~ .vapp-main,
+        body.sidebar-collapsed .vapp-main {
+            left: 72px;
+        }
+
+        .vapp-content {
+            padding: 1.5rem 2rem;
+        }
+
+        /* Content header */
+        .vapp-content-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: .75rem;
+        }
+
+        .vapp-page-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-secondary);
+        }
+
+        .vapp-view-toggle {
+            display: flex;
+            gap: .25rem;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--r-md);
+            padding: .2rem;
+        }
+
+        .vt-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            border-radius: .4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .95rem;
+            color: var(--color-text-muted);
+            cursor: pointer;
+            transition: background 150ms, color 150ms;
+        }
+
+            .vt-btn.active {
+                background: var(--color-primary-light);
+                color: var(--color-primary);
+            }
+
+        /* Sidebar overlay on mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 850;
+            background: rgba(15,23,42,.3);
+            backdrop-filter: blur(2px);
+        }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+
+        /* Tooltip for collapsed sidebar icons */
+        .vapp-sidebar.collapsed .vapp-nav-item::after {
+            content: attr(data-tip);
+            position: absolute;
+            left: calc(100% + 10px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--color-secondary);
+            color: #fff;
+            font-size: .75rem;
+            font-weight: 500;
+            padding: .3rem .65rem;
+            border-radius: var(--r-sm);
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 150ms;
+            z-index: 999;
+        }
+
+        .vapp-sidebar.collapsed .vapp-nav-item:hover::after {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .vapp-sidebar
+
+        {
+            transform: translateX(-100%);
+            width: 256px !important;
+        }
+
+        .vapp-sidebar.mobile-open {
+            transform: translateX(0);
+        }
+
+        .vapp-main {
+            left: 0 !important;
+        }
+
+        .vapp-content {
+            padding: 1rem;
+        }
+
+        .vapp-search {
+            max-width: 100%;
+        }
+
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ══════════ TOP BAR ══════════ -->
+    <div class="vapp-topbar">
+        <button class="vapp-hamburger" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <a class="vapp-brand" asp-area="" asp-controller="Home" asp-action="Index">
+            <div class="vapp-brand-icon"><i class="bi bi-shield-lock-fill"></i></div>
+            <span class="vapp-brand-name d-none d-md-block">Vault</span>
+        </a>
+
+        <div class="vapp-search">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" id="globalSearch" placeholder="Search in Vault…" autocomplete="off" />
+        </div>
+
+        <div class="vapp-topbar-right">
+            <button class="vapp-icon-btn" title="Help" onclick="Vault.alert('info','Help center coming soon.',3000)">
+                <i class="bi bi-question-circle"></i>
+            </button>
+            <button class="vapp-icon-btn" title="Notifications" id="notifBtn">
+                <i class="bi bi-bell"></i>
+                <span class="vapp-notif-dot"></span>
+            </button>
+            <button class="vapp-icon-btn" title="Settings"
+                    asp-area="" asp-controller="Home" asp-action="Settings">
+                <i class="bi bi-gear"></i>
+            </button>
+
+            <!-- Avatar + dropdown -->
+            <div class="vapp-avatar" id="avatarBtn" onclick="toggleProfileMenu()"
+                 title="Account">
+                @(ViewData["UserInitials"] ?? "U")
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile dropdown -->
+    <div class="vapp-profile-menu" id="profileMenu">
+        <div class="vpm-header">
+            <div class="vpm-avatar-lg">@(ViewData["UserInitials"] ?? "U")</div>
+            <div>
+                <div class="vpm-name">@(ViewData["UserName"] ?? "Vault User")</div>
+                <div class="vpm-email">@(ViewData["UserEmail"] ?? "")</div>
+            </div>
+        </div>
+        <a class="vpm-item" asp-area="" asp-controller="Home" asp-action="Profile">
+            <i class="bi bi-person-circle"></i> My Profile
+        </a>
+        <a class="vpm-item" asp-area="" asp-controller="Home" asp-action="Settings">
+            <i class="bi bi-gear"></i> Settings
+        </a>
+        <a class="vpm-item" asp-area="" asp-controller="Home" asp-action="Storage">
+            <i class="bi bi-hdd"></i> Storage &amp; Plans
+        </a>
+        <div class="vpm-divider"></div>
+        <a class="vpm-item vpm-logout" href="#" onclick="confirmLogout(event)">
+            <i class="bi bi-box-arrow-right"></i> Sign Out
+        </a>
+    </div>
+
+    <!-- Sidebar mobile overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebarMobile()"></div>
+
+    <!-- ══════════ SIDEBAR ══════════ -->
+    <aside class="vapp-sidebar" id="vaultSidebar">
+
+        <!-- New / Upload Button -->
+        <button class="vapp-new-btn" onclick="triggerNew()">
+            <div class="new-icon"><i class="bi bi-plus-lg"></i></div>
+            <span class="new-label">New</span>
+            <i class="bi bi-chevron-down ms-auto new-label" style="font-size:.75rem;"></i>
+        </button>
+
+        <!-- Main navigation -->
+        <div class="vapp-nav-label">Main</div>
+
+        <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "home" ? "active" : "")"
+           asp-area="" asp-controller="Home" asp-action="VaultUser"
+           data-tip="Home">
+            <i class="bi bi-house-fill"></i>
+            <span class="nav-label">Home</span>
+        </a>
+
+        <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "myfiles" ? "active" : "")"
+           asp-area="" asp-controller="Vault" asp-action="MyFiles"
+           data-tip="My Files">
+            <i class="bi bi-folder2-open"></i>
+            <span class="nav-label">My Files</span>
+        </a>
+
+        <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "shared" ? "active" : "")"
+           asp-area="" asp-controller="Vault" asp-action="Shared"
+           data-tip="Shared">
+            <i class="bi bi-people-fill"></i>
+            <span class="nav-label">Shared with me</span>
+        </a>
+
+        <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "recent" ? "active" : "")"
+           asp-area="" asp-controller="Vault" asp-action="Recent"
+           data-tip="Recent">
+            <i class="bi bi-clock-history"></i>
+            <span class="nav-label">Recent</span>
+        </a>
+
+        <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "starred" ? "active" : "")"
+           asp-area="" asp-controller="Vault" asp-action="Starred"
+           data-tip="Starred">
+            <i class="bi bi-star-fill"></i>
+            <span class="nav-label">Starred</span>
+        </a>
+
+        <!-- Vault section -->
+        <div class="vapp-nav-label">Vault</div>
+
+        <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "passwords" ? "active" : "")"
+           asp-area="" asp-controller="Vault" asp-action="Passwords"
+           data-tip="Passwords">
+            <i class="bi bi-key-fill"></i>
+            <span class="nav-label">Passwords</span>
+        </a>
+
+        <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "photos" ? "active" : "")"
+           asp-area="" asp-controller="Vault" asp-action="Photos"
+           data-tip="Photos">
+            <i class="bi bi-images"></i>
+            <span class="nav-label">Photos</span>
+        </a>
+
+        <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "docs" ? "active" : "")"
+           asp-area="" asp-controller="Vault" asp-action="Docs"
+           data-tip="Documents">
+            <i class="bi bi-file-earmark-text-fill"></i>
+            <span class="nav-label">Documents</span>
+        </a>
+
+        <!-- More -->
+        <div class="vapp-nav-label">More</div>
+
+        <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "trash" ? "active" : "")"
+           asp-area="" asp-controller="Vault" asp-action="Trash"
+           data-tip="Trash">
+            <i class="bi bi-trash3-fill"></i>
+            <span class="nav-label">Trash</span>
+        </a>
+
+        <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "storage" ? "active" : "")"
+           asp-area="" asp-controller="Home" asp-action="Storage"
+           data-tip="Storage">
+            <i class="bi bi-hdd-fill"></i>
+            <span class="nav-label">Storage</span>
+        </a>
+
+        <!-- Storage usage bar -->
+        <div class="vapp-storage">
+            <div class="storage-label">
+                <span>Storage</span>
+                <span>@(ViewData["StorageUsed"] ?? "0") / @(ViewData["StorageTotal"] ?? "15 GB")</span>
+            </div>
+            <div class="storage-bar">
+                <div class="storage-fill" id="storageFill"
+                     style="width:@(ViewData["StoragePercent"] ?? "0")%"></div>
+            </div>
+            <div class="storage-info">
+                <a asp-area="" asp-controller="Home" asp-action="Storage"
+                   style="color:var(--color-primary);text-decoration:none;font-size:.73rem;font-weight:600;">
+                    Get more storage →
+                </a>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ══════════ MAIN CONTENT ══════════ -->
+    <main class="vapp-main" id="vaultMain">
+        <div class="vapp-content">
+            @RenderBody()
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/vault.js" asp-append-version="true"></script>
+
+    <script>
+        /* ── Sidebar state ── */
+        const isMobile = () => window.innerWidth <= 768;
+        let sidebarCollapsed = localStorage.getItem('vault_sidebar') === 'collapsed';
+
+        function applySidebarState() {
+            const sb = document.getElementById('vaultSidebar');
+            const main = document.getElementById('vaultMain');
+            if (isMobile()) {
+                sb.classList.remove('collapsed');
+            } else {
+                sb.classList.toggle('collapsed', sidebarCollapsed);
+                main.style.left = sidebarCollapsed ? '72px' : '256px';
+            }
+        }
+        applySidebarState();
+
+        function toggleSidebar() {
+            if (isMobile()) {
+                const sb = document.getElementById('vaultSidebar');
+                const ov = document.getElementById('sidebarOverlay');
+                sb.classList.toggle('mobile-open');
+                ov.classList.toggle('show', sb.classList.contains('mobile-open'));
+            } else {
+                sidebarCollapsed = !sidebarCollapsed;
+                localStorage.setItem('vault_sidebar', sidebarCollapsed ? 'collapsed' : 'expanded');
+                applySidebarState();
+            }
+        }
+        function closeSidebarMobile() {
+            document.getElementById('vaultSidebar').classList.remove('mobile-open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+        }
+        window.addEventListener('resize', applySidebarState);
+
+        /* ── Profile menu ── */
+        function toggleProfileMenu() {
+            document.getElementById('profileMenu').classList.toggle('open');
+        }
+        document.addEventListener('click', e => {
+            const menu = document.getElementById('profileMenu');
+            const avatar = document.getElementById('avatarBtn');
+            if (menu.classList.contains('open') && !menu.contains(e.target) && !avatar.contains(e.target)) {
+                menu.classList.remove('open');
+            }
+        });
+
+        /* ── Logout ── */
+        function confirmLogout(e) {
+            e.preventDefault();
+            Vault.confirm(
+                { title: 'Sign out?', message: 'You will be signed out of Vault on this device.', confirmText: 'Sign Out', cancelText: 'Stay' },
+                async () => {
+                    Vault.loader.show('Signing out…');
+                    try {
+                        await fetch('/api/account/logout?logOutAllDevices=false', {
+                            method: 'POST', credentials: 'include'
+                        });
+                    } catch {}
+                    Vault.loader.hide();
+                    window.location.href = '/Home/Auth';
+                }
+            );
+        }
+
+        /* ── New button ── */
+        function triggerNew() {
+            Vault.alert('info', 'Upload panel coming soon.', 3000);
+        }
+
+        /* ── Global search (wire up as needed) ── */
+        let searchTimer;
+        document.getElementById('globalSearch').addEventListener('input', e => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                const q = e.target.value.trim();
+                if (q.length > 1) {
+                    // dispatch search event for each page to handle
+                    document.dispatchEvent(new CustomEvent('vault:search', { detail: { query: q } }));
+                }
+            }, 350);
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

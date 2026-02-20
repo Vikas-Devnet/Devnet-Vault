@@ -1,5 +1,1060 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Sign In – Vault";
+    Layout = "_Layout";
+}
+
+@section Styles {
+<style>
+    /* ── Page shell ── */
+    .auth-wrapper {
+        min-height: calc(100vh - var(--navbar-height));
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    /* ── LEFT PANEL ── */
+    .auth-left {
+        background: linear-gradient(150deg, #0a1628 0%, #1e1b4b 50%, #0f2d5e 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 3.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .auth-left::before {
+        content: '';
+        position: absolute;
+        top: -100px; left: -100px;
+        width: 400px; height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99,102,241,.35) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .auth-left::after {
+        content: '';
+        position: absolute;
+        bottom: -80px; right: -80px;
+        width: 350px; height: 350px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(37,99,235,.3) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .auth-left-logo { position: relative; z-index: 1; }
+    .auth-left-logo .brand { font-size: 1.35rem; font-weight: var(--fw-bold); color: #fff; }
+    .auth-left-content { position: relative; z-index: 1; }
+    .auth-left-content h2 {
+        font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+        font-weight: var(--fw-extrabold);
+        color: #fff;
+        line-height: 1.22;
+        margin-bottom: 1.1rem;
+    }
+    .auth-left-content p {
+        color: rgba(255,255,255,.6);
+        font-size: .9rem;
+        line-height: 1.75;
+    }
+    .auth-feature-list { list-style: none; padding: 0; margin: 1.75rem 0 0; }
+    .auth-feature-list li {
+        display: flex; align-items: center; gap: .75rem;
+        color: rgba(255,255,255,.72);
+        font-size: .87rem;
+        padding: .45rem 0;
+    }
+    .auth-feature-list li .fi {
+        width: 30px; height: 30px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.1);
+        display: flex; align-items: center; justify-content: center;
+        font-size: .82rem;
+        flex-shrink: 0;
+        color: #a5b4fc;
+    }
+    .auth-shield {
+        position: absolute;
+        bottom: 2.5rem; right: 2.5rem;
+        font-size: 7rem;
+        color: rgba(99,102,241,.14);
+        z-index: 0;
+        line-height: 1;
+    }
+
+    /* ── RIGHT PANEL ── */
+    .auth-right {
+        background: var(--color-surface);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 2rem;
+        overflow-y: auto;
+    }
+    .auth-box { width: 100%; max-width: 420px; }
+
+    /* Panels */
+    .auth-panel { display: none; }
+    .auth-panel.active { display: block; animation: panelIn .35s ease both; }
+    @@keyframes panelIn {
+        from { opacity: 0; transform: translateY(14px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tab switcher */
+    .auth-tabs {
+        display: flex;
+        background: var(--color-bg);
+        border-radius: var(--r-full);
+        padding: 4px;
+        margin-bottom: 1.75rem;
+    }
+    .auth-tab {
+        flex: 1; text-align: center;
+        padding: .55rem 1rem;
+        border-radius: var(--r-full);
+        font-size: .875rem;
+        font-weight: var(--fw-semibold);
+        color: var(--color-text-muted);
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        transition: all var(--t-normal);
+    }
+    .auth-tab.active {
+        background: var(--color-surface);
+        color: var(--color-primary);
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    /* Titles */
+    .auth-title {
+        font-size: 1.45rem;
+        font-weight: var(--fw-bold);
+        color: var(--color-secondary);
+        margin-bottom: .3rem;
+    }
+    .auth-subtitle {
+        font-size: .875rem;
+        color: var(--color-text-muted);
+        margin-bottom: 1.6rem;
+    }
+
+    /* Form fields */
+    .vault-field { margin-bottom: 1rem; }
+    .vault-field label {
+        display: block;
+        font-size: .76rem;
+        font-weight: var(--fw-semibold);
+        color: var(--color-text-secondary);
+        margin-bottom: .38rem;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+    .vault-input-wrap { position: relative; }
+    .vault-input-wrap .fi-icon {
+        position: absolute;
+        left: .9rem; top: 50%;
+        transform: translateY(-50%);
+        color: var(--color-text-muted);
+        font-size: .95rem;
+        pointer-events: none;
+        transition: color var(--t-fast);
+    }
+    .vault-input {
+        width: 100%;
+        padding: .68rem 1rem .68rem 2.55rem;
+        background: var(--color-bg);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--r-md);
+        font-size: .9rem;
+        color: var(--color-text-primary);
+        font-family: var(--font-base);
+        transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
+        outline: none;
+    }
+    .vault-input:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+        background: #fff;
+    }
+    .vault-input-wrap:focus-within .fi-icon { color: var(--color-primary); }
+    .vault-input.is-invalid { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.08); }
+    .vault-input.is-valid   { border-color: #22c55e; }
+    .vault-input[readonly]  { cursor: default; background: var(--color-bg); }
+
+    /* Password eye toggle */
+    .pw-toggle {
+        position: absolute;
+        right: .9rem; top: 50%;
+        transform: translateY(-50%);
+        background: none; border: none; padding: 0;
+        color: var(--color-text-muted);
+        cursor: pointer; font-size: .95rem;
+        transition: color var(--t-fast); z-index: 2;
+    }
+    .pw-toggle:hover { color: var(--color-primary); }
+
+    /* Field error text */
+    .field-error {
+        font-size: .74rem; color: #ef4444;
+        margin-top: .28rem; display: none;
+    }
+    .field-error.show { display: block; }
+
+    /* Submit button */
+    .btn-auth {
+        width: 100%; padding: .72rem;
+        background: var(--color-primary); color: #fff;
+        font-weight: var(--fw-semibold); font-size: .92rem;
+        border: none; border-radius: var(--r-md);
+        cursor: pointer;
+        transition: background var(--t-normal), box-shadow var(--t-normal), transform var(--t-fast);
+        display: flex; align-items: center; justify-content: center; gap: .45rem;
+        margin-top: 1.1rem;
+    }
+    .btn-auth:hover {
+        background: var(--color-primary-dark);
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-1px);
+    }
+    .btn-auth:active  { transform: translateY(0); }
+    .btn-auth:disabled { opacity: .65; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* Spinner */
+    .btn-spinner {
+        display: none;
+        width: 16px; height: 16px;
+        border: 2px solid rgba(255,255,255,.35);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin .6s linear infinite;
+    }
+    .btn-spinner.show { display: block; }
+    @@keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Alert */
+    .auth-alert {
+        border-radius: var(--r-md);
+        padding: .7rem 1rem;
+        font-size: .84rem;
+        font-weight: var(--fw-medium);
+        margin-bottom: 1rem;
+        display: none; align-items: center; gap: .5rem;
+    }
+    .auth-alert.show    { display: flex; }
+    .auth-alert.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .auth-alert.error   { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+    /* Divider */
+    .auth-divider {
+        display: flex; align-items: center; gap: .75rem;
+        margin: 1.15rem 0; color: var(--color-text-muted); font-size: .78rem;
+    }
+    .auth-divider::before, .auth-divider::after {
+        content: ''; flex: 1; height: 1px; background: var(--color-border);
+    }
+
+    /* Link button */
+    .link-btn {
+        background: none; border: none; padding: 0;
+        color: var(--color-primary); font-size: .85rem;
+        font-weight: var(--fw-semibold); cursor: pointer;
+        text-decoration: underline; text-underline-offset: 2px;
+        transition: color var(--t-fast);
+    }
+    .link-btn:hover { color: var(--color-primary-dark); }
+
+    /* OTP inputs */
+    .otp-grid {
+        display: flex; gap: .55rem;
+        justify-content: center;
+        margin: 1.4rem 0;
+    }
+    .otp-cell {
+        width: 48px; height: 54px;
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: var(--fw-bold);
+        background: var(--color-bg);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--r-md);
+        color: var(--color-secondary);
+        outline: none;
+        transition: border-color var(--t-fast), box-shadow var(--t-fast);
+        caret-color: transparent;
+    }
+    .otp-cell:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+        background: #fff;
+    }
+    .otp-cell.filled {
+        border-color: var(--color-primary);
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+    }
+    @@keyframes shake {
+        0%,100%{ transform:translateX(0) }
+        20%    { transform:translateX(-6px) }
+        40%    { transform:translateX(6px) }
+        60%    { transform:translateX(-4px) }
+        80%    { transform:translateX(4px) }
+    }
+    .otp-shake { animation: shake .4s ease; }
+
+    /* Resend */
+    .resend-row {
+        text-align: center; font-size: .82rem;
+        color: var(--color-text-muted); margin-top: .6rem;
+    }
+    #resend-timer { font-weight: var(--fw-semibold); color: var(--color-primary); }
+
+    /* Password strength */
+    .pw-strength { display: flex; gap: .3rem; margin-top: .45rem; }
+    .pw-bar {
+        flex: 1; height: 3px;
+        border-radius: 2px;
+        background: var(--color-border);
+        transition: background var(--t-normal);
+    }
+    .pw-label { font-size: .72rem; color: var(--color-text-muted); margin-top: .28rem; }
+
+    /* Back link */
+    .back-link {
+        display: inline-flex; align-items: center; gap: .3rem;
+        font-size: .82rem; color: var(--color-text-muted);
+        background: none; border: none; cursor: pointer; padding: 0;
+        margin-bottom: 1.1rem; transition: color var(--t-fast);
+    }
+    .back-link:hover { color: var(--color-primary); }
+
+    /* Responsive */
+    @@media (max-width: 767px) {
+        .auth-wrapper { grid-template-columns: 1fr; }
+        .auth-left    { display: none; }
+        .auth-right   { min-height: calc(100vh - var(--navbar-height)); padding: 2rem 1.25rem; }
+    }
+</style>
+}
+
+<div class="auth-wrapper">
+
+    <!-- ════════════════ LEFT PANEL ════════════════ -->
+    <div class="auth-left">
+        <div class="auth-left-logo d-flex align-items-center gap-2">
+            <div class="vault-icon-circle flex-shrink-0"
+                 style="background:rgba(255,255,255,.12);color:#a5b4fc;
+                        width:36px;height:36px;font-size:.9rem;backdrop-filter:blur(4px);">
+                <i class="bi bi-shield-lock-fill"></i>
+            </div>
+            <span class="brand">Vault</span>
+        </div>
+
+        <div class="auth-left-content">
+            <h2>Your digital life,<br />locked and loaded.</h2>
+            <p>One secure place for all your files, images, and passwords — across every device you own.</p>
+            <ul class="auth-feature-list">
+                <li>
+                    <span class="fi"><i class="bi bi-folder2-open"></i></span>
+                    Store files, images &amp; documents
+                </li>
+                <li>
+                    <span class="fi"><i class="bi bi-key-fill"></i></span>
+                    AES-256 encrypted password vault
+                </li>
+                <li>
+                    <span class="fi"><i class="bi bi-share-fill"></i></span>
+                    Share &amp; collaborate instantly
+                </li>
+                <li>
+                    <span class="fi"><i class="bi bi-devices"></i></span>
+                    Access from any device, anywhere
+                </li>
+            </ul>
+        </div>
+
+        <p style="color:rgba(255,255,255,.28);font-size:.73rem;position:relative;z-index:1;">
+            &copy; @DateTime.Now.Year Devnet. All rights reserved.
+        </p>
+
+        <div class="auth-shield"><i class="bi bi-shield-lock"></i></div>
+    </div>
+
+    <!-- ════════════════ RIGHT PANEL ════════════════ -->
+    <div class="auth-right">
+        <div class="auth-box">
+
+            <!-- ─────────────────────────────────────────
+                 PANEL 1 : MAIN  (Login / Signup tabs)
+            ───────────────────────────────────────── -->
+            <div id="panel-main" class="auth-panel active">
+
+                <div class="auth-tabs" role="tablist">
+                    <button class="auth-tab active" id="tab-login"
+                            onclick="switchTab('login')"  role="tab">Sign In</button>
+                    <button class="auth-tab"         id="tab-signup"
+                            onclick="switchTab('signup')" role="tab">Create Account</button>
+                </div>
+
+                <!-- ── LOGIN FORM ── -->
+                <div id="form-login">
+                    <h1 class="auth-title">Welcome back 👋</h1>
+                    <p class="auth-subtitle">Sign in to continue to your Vault</p>
+
+                    <div id="alert-login" class="auth-alert" role="alert"></div>
+
+                    <form id="loginForm" novalidate>
+                        <div class="vault-field">
+                            <label for="login-email">Email address</label>
+                            <div class="vault-input-wrap">
+                                <input type="email" id="login-email" class="vault-input"
+                                       placeholder="you@example.com" autocomplete="email" required />
+                                <i class="bi bi-envelope fi-icon"></i>
+                            </div>
+                            <div class="field-error" id="err-login-email">Please enter a valid email.</div>
+                        </div>
+
+                        <div class="vault-field">
+                            <div class="d-flex justify-content-between align-items-center" style="margin-bottom:.38rem;">
+                                <label style="margin-bottom:0;" for="login-password">Password</label>
+                                <button type="button" class="link-btn"
+                                        onclick="showPanel('panel-forgot-step1')"
+                                        style="font-size:.76rem;">Forgot password?</button>
+                            </div>
+                            <div class="vault-input-wrap">
+                                <input type="password" id="login-password" class="vault-input"
+                                       placeholder="••••••••" autocomplete="current-password" required />
+                                <i class="bi bi-lock fi-icon"></i>
+                                <button type="button" class="pw-toggle"
+                                        onclick="togglePw('login-password', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <div class="field-error" id="err-login-password">Password is required.</div>
+                        </div>
+
+                        <button type="submit" class="btn-auth" id="btn-login">
+                            <div class="btn-spinner" id="spin-login"></div>
+                            <i class="bi bi-box-arrow-in-right" id="icon-login"></i>
+                            <span id="text-login">Sign In</span>
+                        </button>
+                    </form>
+
+                    <div class="auth-divider mt-3">or</div>
+                    <p class="text-center" style="font-size:.84rem;color:var(--color-text-muted);">
+                        Don't have an account?
+                        <button class="link-btn" onclick="switchTab('signup')">Create one free</button>
+                    </p>
+                </div>
+
+                <!-- ── SIGNUP FORM ── -->
+                <div id="form-signup" style="display:none;">
+                    <h1 class="auth-title">Create your Vault 🔐</h1>
+                    <p class="auth-subtitle">Free forever. No credit card required.</p>
+
+                    <div id="alert-signup" class="auth-alert" role="alert"></div>
+
+                    <form id="signupForm" novalidate>
+                        <div class="vault-field">
+                            <label for="su-name">Full name</label>
+                            <div class="vault-input-wrap">
+                                <input type="text" id="su-name" class="vault-input"
+                                       placeholder="Jane Doe" autocomplete="name" required />
+                                <i class="bi bi-person fi-icon"></i>
+                            </div>
+                            <div class="field-error" id="err-su-name">Full name is required.</div>
+                        </div>
+
+                        <div class="vault-field">
+                            <label for="su-email">Email address</label>
+                            <div class="vault-input-wrap">
+                                <input type="email" id="su-email" class="vault-input"
+                                       placeholder="you@example.com" autocomplete="email" required />
+                                <i class="bi bi-envelope fi-icon"></i>
+                            </div>
+                            <div class="field-error" id="err-su-email">Please enter a valid email.</div>
+                        </div>
+
+                        <div class="vault-field">
+                            <label for="su-nationality">Nationality</label>
+                            <div class="vault-input-wrap">
+                                <input type="text" id="su-nationality" class="vault-input"
+                                       placeholder="e.g. Indian" autocomplete="country-name" />
+                                <i class="bi bi-globe2 fi-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="vault-field">
+                            <label for="su-password">Password</label>
+                            <div class="vault-input-wrap">
+                                <input type="password" id="su-password" class="vault-input"
+                                       placeholder="Min 6 chars, upper, lower, number"
+                                       autocomplete="new-password" required
+                                       oninput="checkPasswordStrength(this.value, 'su')" />
+                                <i class="bi bi-lock fi-icon"></i>
+                                <button type="button" class="pw-toggle"
+                                        onclick="togglePw('su-password', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <div class="pw-strength">
+                                <div class="pw-bar" id="su-pwb1"></div>
+                                <div class="pw-bar" id="su-pwb2"></div>
+                                <div class="pw-bar" id="su-pwb3"></div>
+                                <div class="pw-bar" id="su-pwb4"></div>
+                            </div>
+                            <div class="pw-label" id="su-pw-label"></div>
+                            <div class="field-error" id="err-su-password">
+                                Must be 6+ chars with uppercase, lowercase &amp; number.
+                            </div>
+                        </div>
+
+                        <div class="vault-field">
+                            <label for="su-confirm">Confirm password</label>
+                            <div class="vault-input-wrap">
+                                <input type="password" id="su-confirm" class="vault-input"
+                                       placeholder="Repeat password" autocomplete="new-password" required />
+                                <i class="bi bi-lock-fill fi-icon"></i>
+                                <button type="button" class="pw-toggle"
+                                        onclick="togglePw('su-confirm', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <div class="field-error" id="err-su-confirm">Passwords do not match.</div>
+                        </div>
+
+                        <button type="submit" class="btn-auth" id="btn-signup">
+                            <div class="btn-spinner" id="spin-signup"></div>
+                            <i class="bi bi-person-plus-fill" id="icon-signup"></i>
+                            <span id="text-signup">Create Account</span>
+                        </button>
+                    </form>
+
+                    <p class="text-center mt-3" style="font-size:.84rem;color:var(--color-text-muted);">
+                        Already have an account?
+                        <button class="link-btn" onclick="switchTab('login')">Sign in</button>
+                    </p>
+                </div>
+            </div>
+
+            <!-- ─────────────────────────────────────────
+                 PANEL 2 : FORGOT — Step 1 (enter email)
+            ───────────────────────────────────────── -->
+            <div id="panel-forgot-step1" class="auth-panel">
+                <button class="back-link" onclick="showPanel('panel-main')">
+                    <i class="bi bi-arrow-left"></i> Back to Sign In
+                </button>
+                <h1 class="auth-title">Forgot password? 🔑</h1>
+                <p class="auth-subtitle">Enter your email and we'll send a one-time OTP.</p>
+
+                <div id="alert-forgot1" class="auth-alert" role="alert"></div>
+
+                <form id="forgotStep1Form" novalidate>
+                    <div class="vault-field">
+                        <label for="fp-email">Email address</label>
+                        <div class="vault-input-wrap">
+                            <input type="email" id="fp-email" class="vault-input"
+                                   placeholder="you@example.com" required />
+                            <i class="bi bi-envelope fi-icon"></i>
+                        </div>
+                        <div class="field-error" id="err-fp-email">Please enter a valid email.</div>
+                    </div>
+
+                    <button type="submit" class="btn-auth" id="btn-fp1">
+                        <div class="btn-spinner" id="spin-fp1"></div>
+                        <i class="bi bi-send-fill" id="icon-fp1"></i>
+                        <span id="text-fp1">Send OTP</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ─────────────────────────────────────────
+                 PANEL 3 : FORGOT — Step 2 (verify OTP)
+            ───────────────────────────────────────── -->
+            <div id="panel-forgot-step2" class="auth-panel">
+                <button class="back-link" onclick="showPanel('panel-forgot-step1')">
+                    <i class="bi bi-arrow-left"></i> Change email
+                </button>
+                <h1 class="auth-title">Check your inbox 📬</h1>
+                <p class="auth-subtitle" id="otp-sent-to">We sent a 6-digit OTP to your email.</p>
+
+                <div id="alert-otp" class="auth-alert" role="alert"></div>
+
+                <div class="otp-grid" id="otpGrid">
+                    <input class="otp-cell" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+                    <input class="otp-cell" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+                    <input class="otp-cell" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+                    <input class="otp-cell" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+                    <input class="otp-cell" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+                    <input class="otp-cell" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+                </div>
+
+                <div class="resend-row">
+                    Resend OTP in <span id="resend-timer">60s</span>
+                    <button class="link-btn ms-1" id="btn-resend"
+                            style="display:none;" onclick="resendOtp()">Resend now</button>
+                </div>
+
+                <button class="btn-auth mt-2" id="btn-verify-otp" onclick="verifyOtp()">
+                    <div class="btn-spinner" id="spin-otp"></div>
+                    <i class="bi bi-check-circle-fill" id="icon-otp"></i>
+                    <span id="text-otp">Verify OTP</span>
+                </button>
+            </div>
+
+            <!-- ─────────────────────────────────────────
+                 PANEL 4 : FORGOT — Step 3 (new password)
+            ───────────────────────────────────────── -->
+            <div id="panel-forgot-step3" class="auth-panel">
+                <h1 class="auth-title">Set new password 🛡️</h1>
+                <p class="auth-subtitle">Almost there! Choose a strong new password.</p>
+
+                <div id="alert-reset" class="auth-alert" role="alert"></div>
+
+                <form id="resetForm" novalidate>
+                    <div class="vault-field">
+                        <label for="rp-email">Email address</label>
+                        <div class="vault-input-wrap">
+                            <input type="email" id="rp-email" class="vault-input" readonly />
+                            <i class="bi bi-envelope fi-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="vault-field">
+                        <label for="rp-password">New password</label>
+                        <div class="vault-input-wrap">
+                            <input type="password" id="rp-password" class="vault-input"
+                                   placeholder="Min 6 chars, upper, lower, number" required
+                                   oninput="checkPasswordStrength(this.value, 'rp')" />
+                            <i class="bi bi-lock fi-icon"></i>
+                            <button type="button" class="pw-toggle"
+                                    onclick="togglePw('rp-password', this)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <div class="pw-strength">
+                            <div class="pw-bar" id="rp-pwb1"></div>
+                            <div class="pw-bar" id="rp-pwb2"></div>
+                            <div class="pw-bar" id="rp-pwb3"></div>
+                            <div class="pw-bar" id="rp-pwb4"></div>
+                        </div>
+                        <div class="pw-label" id="rp-pw-label"></div>
+                        <div class="field-error" id="err-rp-password">
+                            Must be 6+ chars with uppercase, lowercase &amp; number.
+                        </div>
+                    </div>
+
+                    <div class="vault-field">
+                        <label for="rp-confirm">Confirm new password</label>
+                        <div class="vault-input-wrap">
+                            <input type="password" id="rp-confirm" class="vault-input"
+                                   placeholder="Repeat password" required />
+                            <i class="bi bi-lock-fill fi-icon"></i>
+                            <button type="button" class="pw-toggle"
+                                    onclick="togglePw('rp-confirm', this)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <div class="field-error" id="err-rp-confirm">Passwords do not match.</div>
+                    </div>
+
+                    <button type="submit" class="btn-auth" id="btn-reset">
+                        <div class="btn-spinner" id="spin-reset"></div>
+                        <i class="bi bi-shield-check-fill" id="icon-reset"></i>
+                        <span id="text-reset">Update Password</span>
+                    </button>
+                </form>
+            </div>
+
+        </div><!-- /.auth-box -->
+    </div><!-- /.auth-right -->
+</div><!-- /.auth-wrapper -->
+
+
+@section Scripts {
+<script>
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+const State = {
+    forgotEmail:    '',
+    otpKey:         '',      // returned by send-otp (userId)
+    resendInterval: null
+};
+
+const API = {
+    login:          '/api/account/login',
+    register:       '/api/account/register',
+    sendOtp:        '/api/account/send-otp',
+    verifyOtp:      '/api/account/verify-otp',
+    updatePassword: '/api/account/update-password'
+};
+
+const PW_REGEX = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{6,}$/;
+
+/* ═══════════════════════════════════════════
+   PANEL & TAB HELPERS
+═══════════════════════════════════════════ */
+function showPanel(id) {
+    document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function switchTab(tab) {
+    document.getElementById('form-login').style.display  = tab === 'login'  ? 'block' : 'none';
+    document.getElementById('form-signup').style.display = tab === 'signup' ? 'block' : 'none';
+    document.getElementById('tab-login').classList.toggle('active',  tab === 'login');
+    document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+}
+
+/* ═══════════════════════════════════════════
+   ALERT HELPERS
+═══════════════════════════════════════════ */
+function showAlert(id, type, msg) {
+    const el = document.getElementById(id);
+    el.className = `auth-alert show ${type}`;
+    const icon = type === 'success' ? 'check-circle-fill' : 'exclamation-circle-fill';
+    el.innerHTML = `<i class="bi bi-${icon}"></i> ${msg}`;
+}
+function hideAlert(id) {
+    document.getElementById(id).className = 'auth-alert';
+}
+
+/* ═══════════════════════════════════════════
+   LOADING STATE
+═══════════════════════════════════════════ */
+function setLoading(btnId, spinId, iconId, loading) {
+    document.getElementById(btnId).disabled = loading;
+    document.getElementById(spinId).classList.toggle('show', loading);
+    document.getElementById(iconId).style.display = loading ? 'none' : 'inline';
+}
+
+/* ═══════════════════════════════════════════
+   VALIDATION
+═══════════════════════════════════════════ */
+function isValidEmail(v) {
+    return /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(v.trim());
+}
+
+function fieldError(inputId, errId, show) {
+    document.getElementById(inputId).classList.toggle('is-invalid', show);
+    document.getElementById(errId).classList.toggle('show', show);
+    return !show;
+}
+
+/* ═══════════════════════════════════════════
+   PASSWORD STRENGTH
+═══════════════════════════════════════════ */
+function checkPasswordStrength(val, prefix) {
+    const bars   = [1,2,3,4].map(i => document.getElementById(`${prefix}-pwb${i}`));
+    const label  = document.getElementById(`${prefix}-pw-label`);
+    const colors = ['#ef4444','#f97316','#eab308','#22c55e'];
+    const labels = ['Too weak','Fair','Good','Strong 💪'];
+
+    let score = 0;
+    if (val.length >= 6)        score++;
+    if (/[A-Z]/.test(val))      score++;
+    if (/[a-z]/.test(val))      score++;
+    if (/\d/.test(val))         score++;
+
+    bars.forEach((b, i) => {
+        b.style.background = i < score ? colors[score - 1] : 'var(--color-border)';
+    });
+    if (label) label.textContent = val.length ? (labels[score - 1] || '') : '';
+}
+
+/* ═══════════════════════════════════════════
+   PASSWORD TOGGLE
+═══════════════════════════════════════════ */
+function togglePw(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon  = btn.querySelector('i');
+    const isHidden = input.type === 'password';
+    input.type     = isHidden ? 'text' : 'password';
+    icon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+}
+
+/* ═══════════════════════════════════════════
+   API HELPER
+═══════════════════════════════════════════ */
+async function apiCall(url, method = 'POST', body = null) {
+    const opts = {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+    };
+    if (body) opts.body = JSON.stringify(body);
+    const res  = await fetch(url, opts);
+    const data = await res.json().catch(() => ({}));
+    return { ok: res.ok, status: res.status, data };
+}
+
+/* ═══════════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════════ */
+document.getElementById('loginForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    hideAlert('alert-login');
+
+    const email = document.getElementById('login-email').value.trim();
+    const pwd   = document.getElementById('login-password').value;
+
+    let ok = true;
+    ok = fieldError('login-email',    'err-login-email',    !isValidEmail(email)) && ok;
+    ok = fieldError('login-password', 'err-login-password', !pwd)                 && ok;
+    if (!ok) return;
+
+    setLoading('btn-login', 'spin-login', 'icon-login', true);
+    try {
+        const { ok: success, data } = await apiCall(API.login, 'POST', { email, password: pwd });
+        if (success && data.isSuccess) {
+            showAlert('alert-login', 'success', data.message || 'Signed in! Redirecting…');
+            setTimeout(() => window.location.href = '/', 1200);
+        } else {
+            showAlert('alert-login', 'error', data.message || 'Invalid credentials. Please try again.');
+        }
+    } catch {
+        showAlert('alert-login', 'error', 'Network error. Please check your connection.');
+    } finally {
+        setLoading('btn-login', 'spin-login', 'icon-login', false);
+    }
+});
+
+/* ═══════════════════════════════════════════
+   SIGN UP
+═══════════════════════════════════════════ */
+document.getElementById('signupForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    hideAlert('alert-signup');
+
+    const fullName    = document.getElementById('su-name').value.trim();
+    const email       = document.getElementById('su-email').value.trim();
+    const nationality = document.getElementById('su-nationality').value.trim();
+    const password    = document.getElementById('su-password').value;
+    const confirm     = document.getElementById('su-confirm').value;
+
+    let ok = true;
+    ok = fieldError('su-name',     'err-su-name',     !fullName)                    && ok;
+    ok = fieldError('su-email',    'err-su-email',    !isValidEmail(email))          && ok;
+    ok = fieldError('su-password', 'err-su-password', !PW_REGEX.test(password))     && ok;
+    ok = fieldError('su-confirm',  'err-su-confirm',  password !== confirm)          && ok;
+    if (!ok) return;
+
+    setLoading('btn-signup', 'spin-signup', 'icon-signup', true);
+    try {
+        const { ok: success, data } = await apiCall(API.register, 'POST', {
+            email, password, fullName, nationlity: nationality
+        });
+        if (success && data.isSuccess) {
+            showAlert('alert-signup', 'success', data.message || 'Account created! Please sign in.');
+            setTimeout(() => {
+                switchTab('login');
+                showAlert('alert-login', 'success', 'Account created! Please sign in.');
+            }, 1800);
+        } else {
+            showAlert('alert-signup', 'error', data.message || 'Registration failed. Please try again.');
+        }
+    } catch {
+        showAlert('alert-signup', 'error', 'Network error. Please check your connection.');
+    } finally {
+        setLoading('btn-signup', 'spin-signup', 'icon-signup', false);
+    }
+});
+
+/* ═══════════════════════════════════════════
+   FORGOT — STEP 1: SEND OTP
+═══════════════════════════════════════════ */
+document.getElementById('forgotStep1Form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    hideAlert('alert-forgot1');
+
+    const email = document.getElementById('fp-email').value.trim();
+    if (!fieldError('fp-email', 'err-fp-email', !isValidEmail(email))) return;
+
+    setLoading('btn-fp1', 'spin-fp1', 'icon-fp1', true);
+    try {
+        const { ok, data } = await apiCall(`${API.sendOtp}?email=${encodeURIComponent(email)}`, 'GET');
+        if (ok && data.isSuccess) {
+            State.forgotEmail = email;
+            State.otpKey      = data.result;  // userId used as OtpKey
+            document.getElementById('otp-sent-to').textContent =
+                `We sent a 6-digit OTP to ${email}`;
+            clearOtpCells();
+            showPanel('panel-forgot-step2');
+            startResendTimer();
+            setTimeout(() => document.querySelector('.otp-cell').focus(), 100);
+        } else {
+            showAlert('alert-forgot1', 'error', data.message || 'Could not send OTP. Check your email.');
+        }
+    } catch {
+        showAlert('alert-forgot1', 'error', 'Network error. Please try again.');
+    } finally {
+        setLoading('btn-fp1', 'spin-fp1', 'icon-fp1', false);
+    }
+});
+
+/* ═══════════════════════════════════════════
+   OTP INPUT BEHAVIOUR
+═══════════════════════════════════════════ */
+function clearOtpCells() {
+    document.querySelectorAll('.otp-cell').forEach(c => {
+        c.value = '';
+        c.classList.remove('filled');
+    });
+}
+
+document.getElementById('otpGrid').addEventListener('input', function (e) {
+    const cells = [...document.querySelectorAll('.otp-cell')];
+    const idx   = cells.indexOf(e.target);
+    const val   = e.target.value.replace(/\D/g, '');
+    e.target.value = val;
+    e.target.classList.toggle('filled', !!val);
+    if (val && idx < cells.length - 1) cells[idx + 1].focus();
+});
+
+document.getElementById('otpGrid').addEventListener('keydown', function (e) {
+    const cells = [...document.querySelectorAll('.otp-cell')];
+    const idx   = cells.indexOf(e.target);
+    if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+        cells[idx - 1].value = '';
+        cells[idx - 1].classList.remove('filled');
+        cells[idx - 1].focus();
+    }
+});
+
+// Allow paste of full OTP
+document.getElementById('otpGrid').addEventListener('paste', function (e) {
+    e.preventDefault();
+    const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+    const cells  = [...document.querySelectorAll('.otp-cell')];
+    pasted.split('').forEach((ch, i) => {
+        if (cells[i]) {
+            cells[i].value = ch;
+            cells[i].classList.add('filled');
+        }
+    });
+    if (cells[pasted.length - 1]) cells[pasted.length - 1].focus();
+});
+
+function getOtpValue() {
+    return [...document.querySelectorAll('.otp-cell')].map(c => c.value).join('');
+}
+
+/* ═══════════════════════════════════════════
+   RESEND TIMER
+═══════════════════════════════════════════ */
+function startResendTimer(seconds = 60) {
+    clearInterval(State.resendInterval);
+    let remaining   = seconds;
+    const timerEl   = document.getElementById('resend-timer');
+    const resendBtn = document.getElementById('btn-resend');
+
+    timerEl.textContent  = `${remaining}s`;
+    timerEl.style.display = 'inline';
+    resendBtn.style.display = 'none';
+
+    State.resendInterval = setInterval(() => {
+        remaining--;
+        timerEl.textContent = `${remaining}s`;
+        if (remaining <= 0) {
+            clearInterval(State.resendInterval);
+            timerEl.style.display = 'none';
+            resendBtn.style.display = 'inline';
+        }
+    }, 1000);
+}
+
+async function resendOtp() {
+    hideAlert('alert-otp');
+    try {
+        const { ok, data } = await apiCall(
+            `${API.sendOtp}?email=${encodeURIComponent(State.forgotEmail)}`, 'GET'
+        );
+        if (ok && data.isSuccess) {
+            State.otpKey = data.result;
+            showAlert('alert-otp', 'success', 'OTP resent successfully.');
+            startResendTimer();
+            clearOtpCells();
+            setTimeout(() => document.querySelector('.otp-cell').focus(), 50);
+        } else {
+            showAlert('alert-otp', 'error', data.message || 'Could not resend OTP.');
+        }
+    } catch {
+        showAlert('alert-otp', 'error', 'Network error.');
+    }
+}
+
+/* ═══════════════════════════════════════════
+   VERIFY OTP
+═══════════════════════════════════════════ */
+async function verifyOtp() {
+    hideAlert('alert-otp');
+    const otp = getOtpValue();
+
+    if (otp.length < 6) {
+        showAlert('alert-otp', 'error', 'Please enter the complete 6-digit OTP.');
+        return;
+    }
+
+    setLoading('btn-verify-otp', 'spin-otp', 'icon-otp', true);
+    try {
+        const { ok, data } = await apiCall(API.verifyOtp, 'POST', {
+            otp,
+            otpKey: State.otpKey
+        });
+        if (ok && data.isSuccess) {
+            document.getElementById('rp-email').value = State.forgotEmail;
+            showPanel('panel-forgot-step3');
+        } else {
+            showAlert('alert-otp', 'error', data.message || 'Invalid or expired OTP. Try again.');
+            // Shake animation
+            const grid = document.getElementById('otpGrid');
+            grid.classList.remove('otp-shake');
+            void grid.offsetWidth;
+            grid.classList.add('otp-shake');
+        }
+    } catch {
+        showAlert('alert-otp', 'error', 'Network error.');
+    } finally {
+        setLoading('btn-verify-otp', 'spin-otp', 'icon-otp', false);
+    }
+}
+
+/* ═══════════════════════════════════════════
+   RESET PASSWORD
+═══════════════════════════════════════════ */
+document.getElementById('resetForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    hideAlert('alert-reset');
+
+    const password = document.getElementById('rp-password').value;
+    const confirm  = document.getElementById('rp-confirm').value;
+
+    let ok = true;
+    ok = fieldError('rp-password', 'err-rp-password', !PW_REGEX.test(password)) && ok;
+    ok = fieldError('rp-confirm',  'err-rp-confirm',  password !== confirm)      && ok;
+    if (!ok) return;
+
+    setLoading('btn-reset', 'spin-reset', 'icon-reset', true);
+    try {
+        const { ok: success, data } = await apiCall(API.updatePassword, 'POST', {
+            email:    State.forgotEmail,
+            password
+        });
+        if (success && data.isSuccess) {
+            showAlert('alert-reset', 'success', 'Password updated! Redirecting to sign in…');
+            setTimeout(() => {
+                showPanel('panel-main');
+                switchTab('login');
+                showAlert('alert-login', 'success', 'Password updated successfully. Please sign in.');
+            }, 1800);
+        } else {
+            showAlert('alert-reset', 'error', data.message || 'Could not update password. Please try again.');
+        }
+    } catch {
+        showAlert('alert-reset', 'error', 'Network error.');
+    } finally {
+        setLoading('btn-reset', 'spin-reset', 'icon-reset', false);
+    }
+});
+</script>
 }

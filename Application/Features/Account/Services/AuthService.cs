@@ -41,7 +41,7 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
         if (user.IsDeleted)
             return ServiceResponseGenerator<AuthResponseDto>.Failure("Account has been deleted");
 
-        if (user.IsActive)
+        if (!user.IsActive)
             return ServiceResponseGenerator<AuthResponseDto>.Failure("Account has been deactivated");
 
         var (token, expireTime) = jwtTokenGenerator.GenerateToken(user.UserId, user.Email);
@@ -141,7 +141,7 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
         if (user.IsDeleted)
             return ServiceResponseGenerator<string>.Failure("Account has been deleted");
 
-        if (user.IsActive)
+        if (!user.IsActive)
             return ServiceResponseGenerator<string>.Failure("Account has been deactivated");
         var otp = await _otpService.GenerateOtpAsync(user.UserId.ToString(), TimeSpan.FromMinutes(TimeConstants.OtpExpireTime), ctx);
 
@@ -188,7 +188,7 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
         if (user.IsDeleted)
             return ServiceResponseGenerator<bool>.Failure("Account has been deleted");
 
-        if (user.IsActive)
+        if (!user.IsActive)
             return ServiceResponseGenerator<bool>.Failure("Account has been deactivated");
 
         var isUpdated = await users.UpdatePassword(user.UserId, password, ipAddress, ctx);

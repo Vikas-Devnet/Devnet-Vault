@@ -1,0 +1,1181 @@
+﻿@{
+    ViewData["Title"] = "Sign In – Vault";
+    Layout = null;
+}
+
+@{
+    var apiEndpoints = new
+    {
+        Login = "/api/account/login",
+        Register = "/api/account/register",
+        SendOtp = "/api/account/send-otp",
+        VerifyOtp = "/api/account/verify-otp",
+        UpdatePassword = "/api/account/update-password"
+    };
+
+    var passwordRegex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{6,}$";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter',system-ui,sans-serif;
+        }
+
+        .auth-wrapper {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        /* LEFT */
+        .auth-left {
+            background: linear-gradient(150deg,#0a1628 0%,#1e1b4b 50%,#0f2d5e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .auth-left::before {
+                content: '';
+                position: absolute;
+                top: -100px;
+                left: -100px;
+                width: 400px;
+                height: 400px;
+                border-radius: 50%;
+                background: radial-gradient(circle,rgba(99,102,241,.38) 0%,transparent 70%);
+                pointer-events: none;
+            }
+
+            .auth-left::after {
+                content: '';
+                position: absolute;
+                bottom: -80px;
+                right: -80px;
+                width: 350px;
+                height: 350px;
+                border-radius: 50%;
+                background: radial-gradient(circle,rgba(37,99,235,.32) 0%,transparent 70%);
+                pointer-events: none;
+            }
+
+        .auth-brand {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .auth-left-content {
+            position: relative;
+            z-index: 1;
+        }
+
+            .auth-left-content h2 {
+                font-size: clamp(1.6rem,2.5vw,2.1rem);
+                font-weight: 800;
+                color: #fff;
+                line-height: 1.22;
+                margin-bottom: 1rem;
+            }
+
+            .auth-left-content p {
+                color: rgba(255,255,255,.6);
+                font-size: .9rem;
+                line-height: 1.75;
+                max-width: 340px;
+            }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 1.75rem 0 0;
+        }
+
+            .feature-list li {
+                display: flex;
+                align-items: center;
+                gap: .75rem;
+                color: rgba(255,255,255,.72);
+                font-size: .87rem;
+                padding: .42rem 0;
+            }
+
+            .feature-list .fic {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background: rgba(255,255,255,.1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: .82rem;
+                flex-shrink: 0;
+                color: #a5b4fc;
+            }
+
+        .auth-shield {
+            position: absolute;
+            bottom: 2.5rem;
+            right: 2.5rem;
+            font-size: 7rem;
+            color: rgba(99,102,241,.13);
+            z-index: 0;
+            line-height: 1;
+        }
+        /* RIGHT */
+        .auth-right {
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2rem;
+            overflow-y: auto;
+        }
+
+        .auth-box {
+            width: 100%;
+            max-width: 420px;
+        }
+        /* Panels */
+        .auth-panel {
+            display: none;
+        }
+
+            .auth-panel.active {
+                display: block;
+                animation: panelIn .35s cubic-bezier(.34,1.2,.64,1) both;
+            }
+
+        @@keyframes panelIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* Tabs */
+        .auth-tabs {
+            display: flex;
+            background: #EEF2FF;
+            border-radius: 9999px;
+            padding: 4px;
+            margin-bottom: 1.75rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: .55rem 1rem;
+            border-radius: 9999px;
+            font-size: .875rem;
+            font-weight: 600;
+            color: #94A3B8;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            transition: all 250ms ease;
+        }
+
+            .auth-tab.active {
+                background: #fff;
+                color: #2563EB;
+                box-shadow: 0 2px 8px rgba(0,0,0,.08);
+            }
+
+        .auth-title {
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: .3rem;
+        }
+
+        .auth-subtitle {
+            font-size: .875rem;
+            color: #94A3B8;
+            margin-bottom: 1.6rem;
+        }
+        /* Form field */
+        .vf {
+            margin-bottom: 1rem;
+        }
+
+            .vf label {
+                display: block;
+                font-size: .76rem;
+                font-weight: 600;
+                color: #475569;
+                margin-bottom: .38rem;
+                text-transform: uppercase;
+                letter-spacing: .05em;
+            }
+
+        .vi-wrap {
+            position: relative;
+        }
+
+            .vi-wrap .ficon {
+                position: absolute;
+                left: .9rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #94A3B8;
+                font-size: .95rem;
+                pointer-events: none;
+                transition: color 150ms;
+            }
+
+            .vi-wrap:focus-within .ficon {
+                color: #2563EB;
+            }
+
+        .vi {
+            width: 100%;
+            padding: .68rem 1rem .68rem 2.55rem;
+            background: #EEF2FF;
+            border: 1.5px solid #E2E8F0;
+            border-radius: .75rem;
+            font-size: .9rem;
+            color: #0F172A;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 150ms,box-shadow 150ms,background 150ms;
+        }
+
+            .vi:focus {
+                border-color: #2563EB;
+                box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+                background: #fff;
+            }
+
+            .vi.is-invalid {
+                border-color: #ef4444;
+                box-shadow: 0 0 0 3px rgba(239,68,68,.08);
+            }
+
+            .vi[readonly] {
+                background: #EEF2FF;
+                cursor: default;
+            }
+
+            .vi::placeholder {
+                color: #94A3B8;
+            }
+
+        .ferr {
+            font-size: .74rem;
+            color: #ef4444;
+            margin-top: .28rem;
+            display: none;
+        }
+
+            .ferr.show {
+                display: block;
+            }
+
+        .pw-eye {
+            position: absolute;
+            right: .9rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            padding: 0;
+            color: #94A3B8;
+            cursor: pointer;
+            font-size: .95rem;
+            transition: color 150ms;
+            z-index: 2;
+        }
+
+            .pw-eye:hover {
+                color: #2563EB;
+            }
+        /* Submit btn */
+        .btn-auth {
+            width: 100%;
+            padding: .72rem;
+            background: #2563EB;
+            color: #fff;
+            font-weight: 600;
+            font-size: .92rem;
+            border: none;
+            border-radius: .75rem;
+            cursor: pointer;
+            transition: background 250ms,box-shadow 250ms,transform 150ms;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .45rem;
+            margin-top: 1.1rem;
+        }
+
+            .btn-auth:hover {
+                background: #1D4ED8;
+                box-shadow: 0 8px 32px rgba(37,99,235,.25);
+                transform: translateY(-1px);
+            }
+
+            .btn-auth:active {
+                transform: translateY(0);
+            }
+
+            .btn-auth:disabled {
+                opacity: .65;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+            }
+
+        .btn-spin {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: bspin .6s linear infinite;
+        }
+
+            .btn-spin.show {
+                display: block;
+            }
+
+        @@keyframes bspin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        /* Misc */
+        .adivider {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            margin: 1.15rem 0;
+            color: #94A3B8;
+            font-size: .78rem;
+        }
+
+            .adivider::before, .adivider::after {
+                content: '';
+                flex: 1;
+                height: 1px;
+                background: #E2E8F0;
+            }
+
+        .lbtn {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #2563EB;
+            font-size: .85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            transition: color 150ms;
+        }
+
+            .lbtn:hover {
+                color: #1D4ED8;
+            }
+        /* OTP */
+        .otp-grid {
+            display: flex;
+            gap: .55rem;
+            justify-content: center;
+            margin: 1.4rem 0;
+        }
+
+        .otp-cell {
+            width: 48px;
+            height: 54px;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: #EEF2FF;
+            border: 1.5px solid #E2E8F0;
+            border-radius: .75rem;
+            color: #0F172A;
+            outline: none;
+            transition: border-color 150ms,box-shadow 150ms;
+            caret-color: transparent;
+        }
+
+            .otp-cell:focus {
+                border-color: #2563EB;
+                box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+                background: #fff;
+            }
+
+            .otp-cell.filled {
+                border-color: #2563EB;
+                background: #DBEAFE;
+                color: #2563EB;
+            }
+
+        @@keyframes shake {
+            0%, 100% {
+                transform: translateX(0)
+            }
+
+            20% {
+                transform: translateX(-6px)
+            }
+
+            40% {
+                transform: translateX(6px)
+            }
+
+            60% {
+                transform: translateX(-4px)
+            }
+
+            80% {
+                transform: translateX(4px)
+            }
+        }
+
+        .otp-shake {
+            animation: shake .4s ease;
+        }
+
+        .resend-row {
+            text-align: center;
+            font-size: .82rem;
+            color: #94A3B8;
+            margin-top: .6rem;
+        }
+
+        #resend-timer {
+            font-weight: 600;
+            color: #2563EB;
+        }
+
+        .pw-bars {
+            display: flex;
+            gap: .3rem;
+            margin-top: .45rem;
+        }
+
+        .pw-bar {
+            flex: 1;
+            height: 3px;
+            border-radius: 2px;
+            background: #E2E8F0;
+            transition: background 250ms;
+        }
+
+        .pw-lbl {
+            font-size: .72rem;
+            color: #94A3B8;
+            margin-top: .28rem;
+        }
+
+        .back-lnk {
+            display: inline-flex;
+            align-items: center;
+            gap: .3rem;
+            font-size: .82rem;
+            color: #94A3B8;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            margin-bottom: 1.1rem;
+            transition: color 150ms;
+        }
+
+            .back-lnk:hover {
+                color: #2563EB;
+            }
+
+        @@media(max-width:767px) {
+            .auth-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-left {
+                display: none;
+            }
+
+            .auth-right {
+                min-height: 100vh;
+                padding: 2rem 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-wrapper">
+        <!-- LEFT SECTION -->
+        <div class="auth-left">
+            <div class="d-flex align-items-center gap-2" style="position:relative;z-index:1;">
+                <img src="~/favicon.ico"
+                     alt="Vault"
+                     style="width:38px; height:38px; object-fit:contain;">
+                <span class="auth-brand">Vault</span>
+            </div>
+
+            <div class="auth-left-content">
+                <h2>Your digital life,<br />locked and loaded.</h2>
+                <p>One secure place for all your files, images, and passwords — across every device you own.</p>
+                <ul class="feature-list">
+                    <li><span class="fic"><i class="bi bi-folder2-open"></i></span> Store files, images &amp; documents</li>
+                    <li><span class="fic"><i class="bi bi-key-fill"></i></span> AES-256 encrypted password vault</li>
+                    <li><span class="fic"><i class="bi bi-share-fill"></i></span> Share &amp; collaborate instantly</li>
+                    <li><span class="fic"><i class="bi bi-device-hdd"></i></span> Access from any device, anywhere</li>
+                </ul>
+            </div>
+
+            <p style="color:rgba(255,255,255,.25);font-size:.72rem;position:relative;z-index:1;">
+                &copy; @DateTime.Now.Year Devnet. All rights reserved.
+            </p>
+            <div class="auth-shield"><i class="bi bi-shield-lock"></i></div>
+        </div>
+
+        <!-- RIGHT SECTION -->
+        <div class="auth-right">
+            <div class="auth-box">
+                <!-- PANEL 1: Login / Signup -->
+                <div id="p-main" class="auth-panel active">
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+                        <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+                    </div>
+
+                    <!-- LOGIN FORM -->
+                    <div id="f-login">
+                        <form id="loginForm" novalidate>
+                            <div class="vf">
+                                <label for="l-email">Email address</label>
+                                <div class="vi-wrap">
+                                    <input type="email" id="l-email" class="vi" placeholder="you@example.com" autocomplete="email" required />
+                                    <i class="bi bi-envelope ficon"></i>
+                                </div>
+                                <div class="ferr" id="e-l-email">Please enter a valid email.</div>
+                            </div>
+
+                            <div class="vf">
+                                <div class="d-flex justify-content-between align-items-center" style="margin-bottom:.38rem;">
+                                    <label for="l-pw" style="margin-bottom:0;">Password</label>
+                                    <button type="button" class="lbtn" style="font-size:.76rem;" onclick="goPanel('p-fp1')">Forgot password?</button>
+                                </div>
+                                <div class="vi-wrap">
+                                    <input type="password" id="l-pw" class="vi" placeholder="••••••••" autocomplete="current-password" required />
+                                    <i class="bi bi-lock ficon"></i>
+                                    <button type="button" class="pw-eye" onclick="togglePasswordVisibility('l-pw', this)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="ferr" id="e-l-pw">Password is required.</div>
+                            </div>
+
+                            <button type="submit" class="btn-auth" id="btn-login">
+                                <div class="btn-spin" id="spin-login"></div>
+                                <i class="bi bi-box-arrow-in-right" id="ico-login"></i>
+                                <span>Sign In</span>
+                            </button>
+                        </form>
+
+                        <div class="adivider mt-3">or</div>
+                        <p class="text-center" style="font-size:.84rem;color:#94A3B8;">
+                            Don't have an account? <button class="lbtn" onclick="switchTab('signup')">Create one free</button>
+                        </p>
+                    </div>
+
+                    <!-- SIGNUP FORM -->
+                    <div id="f-signup" style="display:none;">
+                        <form id="signupForm" novalidate>
+                            <div class="vf">
+                                <label for="s-name">Full name</label>
+                                <div class="vi-wrap">
+                                    <input type="text" id="s-name" class="vi" placeholder="Jane Doe" autocomplete="name" required />
+                                    <i class="bi bi-person ficon"></i>
+                                </div>
+                                <div class="ferr" id="e-s-name">Full name is required.</div>
+                            </div>
+
+                            <div class="vf">
+                                <label for="s-email">Email address</label>
+                                <div class="vi-wrap">
+                                    <input type="email" id="s-email" class="vi" placeholder="you@example.com" autocomplete="email" required />
+                                    <i class="bi bi-envelope ficon"></i>
+                                </div>
+                                <div class="ferr" id="e-s-email">Please enter a valid email.</div>
+                            </div>
+
+                            <div class="vf">
+                                <label for="s-nat">Nationality</label>
+                                <div class="vi-wrap">
+                                    <input type="text" id="s-nat" class="vi" placeholder="e.g. Indian" autocomplete="country-name" />
+                                    <i class="bi bi-globe2 ficon"></i>
+                                </div>
+                            </div>
+
+                            <div class="vf">
+                                <label for="s-pw">Password</label>
+                                <div class="vi-wrap">
+                                    <input type="password" id="s-pw" class="vi" placeholder="Min 6 chars, upper, lower, number"
+                                           autocomplete="new-password" required oninput="checkPasswordStrength(this.value, 's')" />
+                                    <i class="bi bi-lock ficon"></i>
+                                    <button type="button" class="pw-eye" onclick="togglePasswordVisibility('s-pw', this)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="pw-bars">
+                                    <div class="pw-bar" id="s-b1"></div>
+                                    <div class="pw-bar" id="s-b2"></div>
+                                    <div class="pw-bar" id="s-b3"></div>
+                                    <div class="pw-bar" id="s-b4"></div>
+                                </div>
+                                <div class="pw-lbl" id="s-plbl"></div>
+                                <div class="ferr" id="e-s-pw">Must be 6+ chars with uppercase, lowercase &amp; number.</div>
+                            </div>
+
+                            <div class="vf">
+                                <label for="s-cpw">Confirm password</label>
+                                <div class="vi-wrap">
+                                    <input type="password" id="s-cpw" class="vi" placeholder="Repeat password" autocomplete="new-password" required />
+                                    <i class="bi bi-lock-fill ficon"></i>
+                                    <button type="button" class="pw-eye" onclick="togglePasswordVisibility('s-cpw', this)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="ferr" id="e-s-cpw">Passwords do not match.</div>
+                            </div>
+
+                            <button type="submit" class="btn-auth" id="btn-signup">
+                                <div class="btn-spin" id="spin-signup"></div>
+                                <i class="bi bi-person-plus-fill" id="ico-signup"></i>
+                                <span>Create Account</span>
+                            </button>
+                        </form>
+
+                        <p class="text-center mt-3" style="font-size:.84rem;color:#94A3B8;">
+                            Already have an account? <button class="lbtn" onclick="switchTab('login')">Sign in</button>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- PANEL 2: Forgot Password - Email -->
+                <div id="p-fp1" class="auth-panel">
+                    <button class="back-lnk" onclick="goPanel('p-main')">
+                        <i class="bi bi-arrow-left"></i> Back to Sign In
+                    </button>
+                    <h1 class="auth-title">Forgot password? 🔑</h1>
+                    <p class="auth-subtitle">Enter your email and we'll send a one-time OTP.</p>
+
+                    <form id="fp1Form" novalidate>
+                        <div class="vf">
+                            <label for="fp-email">Email address</label>
+                            <div class="vi-wrap">
+                                <input type="email" id="fp-email" class="vi" placeholder="you@example.com" required />
+                                <i class="bi bi-envelope ficon"></i>
+                            </div>
+                            <div class="ferr" id="e-fp-email">Please enter a valid email.</div>
+                        </div>
+
+                        <button type="submit" class="btn-auth" id="btn-fp1">
+                            <div class="btn-spin" id="spin-fp1"></div>
+                            <i class="bi bi-send-fill" id="ico-fp1"></i>
+                            <span>Send OTP</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- PANEL 3: OTP Verification -->
+                <div id="p-fp2" class="auth-panel">
+                    <button class="back-lnk" onclick="goPanel('p-fp1')">
+                        <i class="bi bi-arrow-left"></i> Change email
+                    </button>
+                    <h1 class="auth-title">Check your inbox 📬</h1>
+                    <p class="auth-subtitle" id="otp-sub">We sent a 6-digit OTP to your email.</p>
+
+                    <div class="otp-grid" id="otpGrid">
+                        @for (int i = 0; i < 6; i++)
+                        {
+                            <input class="otp-cell" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+                        }
+                    </div>
+
+                    <div class="resend-row">
+                        Resend in <span id="resend-timer">60s</span>
+                        <button class="lbtn ms-1" id="btn-resend" style="display:none;" onclick="resendOtp()">Resend</button>
+                    </div>
+
+                    <button class="btn-auth mt-2" id="btn-votp" onclick="verifyOtp()">
+                        <div class="btn-spin" id="spin-votp"></div>
+                        <i class="bi bi-check-circle-fill" id="ico-votp"></i>
+                        <span>Verify OTP</span>
+                    </button>
+                </div>
+
+                <!-- PANEL 4: New Password -->
+                <div id="p-fp3" class="auth-panel">
+                    <h1 class="auth-title">Set new password 🛡️</h1>
+                    <p class="auth-subtitle">Almost there! Choose a strong password.</p>
+
+                    <form id="resetForm" novalidate>
+                        <div class="vf">
+                            <label>Email address</label>
+                            <div class="vi-wrap">
+                                <input type="email" id="rp-email" class="vi" readonly />
+                                <i class="bi bi-envelope ficon"></i>
+                            </div>
+                        </div>
+
+                        <div class="vf">
+                            <label for="rp-pw">New password</label>
+                            <div class="vi-wrap">
+                                <input type="password" id="rp-pw" class="vi" placeholder="Min 6 chars, upper, lower, number"
+                                       required oninput="checkPasswordStrength(this.value, 'r')" />
+                                <i class="bi bi-lock ficon"></i>
+                                <button type="button" class="pw-eye" onclick="togglePasswordVisibility('rp-pw', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <div class="pw-bars">
+                                <div class="pw-bar" id="r-b1"></div>
+                                <div class="pw-bar" id="r-b2"></div>
+                                <div class="pw-bar" id="r-b3"></div>
+                                <div class="pw-bar" id="r-b4"></div>
+                            </div>
+                            <div class="pw-lbl" id="r-plbl"></div>
+                            <div class="ferr" id="e-rp-pw">Must be 6+ chars with uppercase, lowercase &amp; number.</div>
+                        </div>
+
+                        <div class="vf">
+                            <label for="rp-cpw">Confirm new password</label>
+                            <div class="vi-wrap">
+                                <input type="password" id="rp-cpw" class="vi" placeholder="Repeat password" required />
+                                <i class="bi bi-lock-fill ficon"></i>
+                                <button type="button" class="pw-eye" onclick="togglePasswordVisibility('rp-cpw', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <div class="ferr" id="e-rp-cpw">Passwords do not match.</div>
+                        </div>
+
+                        <button type="submit" class="btn-auth" id="btn-reset">
+                            <div class="btn-spin" id="spin-reset"></div>
+                            <i class="bi bi-shield-check-fill" id="ico-reset"></i>
+                            <span>Update Password</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/vault.js" asp-append-version="true"></script>
+
+    <script>
+        (function() {
+            const API_ENDPOINTS = @Html.Raw(Json.Serialize(apiEndpoints));
+            const PASSWORD_REGEX = @Html.Raw(Json.Serialize(passwordRegex));
+
+            const sessionState = {
+                email: '',
+                otpKey: '',
+                timer: null
+            };
+
+            function goPanel(panelId) {
+                document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+                document.getElementById(panelId).classList.add('active');
+            }
+
+            function switchTab(tab) {
+                document.getElementById('f-login').style.display = tab === 'login' ? 'block' : 'none';
+                document.getElementById('f-signup').style.display = tab === 'signup' ? 'block' : 'none';
+                document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+                document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+            }
+
+            function setButtonLoading(buttonId, spinnerId, iconId, isLoading) {
+                document.getElementById(buttonId).disabled = isLoading;
+                document.getElementById(spinnerId).classList.toggle('show', isLoading);
+                document.getElementById(iconId).style.display = isLoading ? 'none' : 'inline';
+            }
+
+            function isValidEmail(email) {
+                return /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(email.trim());
+            }
+
+            function validateField(inputId, errorId, isValid) {
+                const input = document.getElementById(inputId);
+                const error = document.getElementById(errorId);
+                input.classList.toggle('is-invalid', !isValid);
+                error.classList.toggle('show', !isValid);
+                return isValid;
+            }
+
+            async function apiCall(url, method, body = null) {
+                try {
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: body ? JSON.stringify(body) : undefined
+                    });
+                    return {
+                        ok: response.ok,
+                        data: await response.json().catch(() => ({}))
+                    };
+                } catch (error) {
+                    return { ok: false, data: {} };
+                }
+            }
+
+            // ==================== PASSWORD FUNCTIONS ====================
+            function checkPasswordStrength(password, prefix) {
+                const bars = [1, 2, 3, 4].map(i => document.getElementById(`${prefix}-b${i}`));
+                const label = document.getElementById(`${prefix}-plbl`);
+
+                const strengthColors = ['#ef4444', '#f97316', '#eab308', '#22c55e'];
+                const strengthLabels = ['Too weak', 'Fair', 'Good', 'Strong 💪'];
+
+                let strength = 0;
+                if (password.length >= 6) strength++;
+                if (/[A-Z]/.test(password)) strength++;
+                if (/[a-z]/.test(password)) strength++;
+                if (/\d/.test(password)) strength++;
+
+                bars.forEach((bar, index) => {
+                    bar.style.background = index < strength ? strengthColors[strength - 1] : '#E2E8F0';
+                });
+
+                if (label) {
+                    label.textContent = password.length ? (strengthLabels[strength - 1] || '') : '';
+                }
+            }
+
+            function togglePasswordVisibility(inputId, button) {
+                const input = document.getElementById(inputId);
+                const icon = button.querySelector('i');
+                input.type = input.type === 'password' ? 'text' : 'password';
+                icon.className = input.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+            }
+
+            function clearOtpFields() {
+                document.querySelectorAll('.otp-cell').forEach(cell => {
+                    cell.value = '';
+                    cell.classList.remove('filled');
+                });
+            }
+
+            function getOtpValue() {
+                return [...document.querySelectorAll('.otp-cell')].map(cell => cell.value).join('');
+            }
+
+            function startTimer(seconds = 60) {
+                clearInterval(sessionState.timer);
+
+                let remaining = seconds;
+                const timerElement = document.getElementById('resend-timer');
+                const resendButton = document.getElementById('btn-resend');
+
+                timerElement.textContent = `${remaining}s`;
+                timerElement.style.display = 'inline';
+                resendButton.style.display = 'none';
+
+                sessionState.timer = setInterval(() => {
+                    remaining--;
+                    timerElement.textContent = `${remaining}s`;
+
+                    if (remaining <= 0) {
+                        clearInterval(sessionState.timer);
+                        timerElement.style.display = 'none';
+                        resendButton.style.display = 'inline';
+                    }
+                }, 1000);
+            }
+
+            document.getElementById('otpGrid').addEventListener('input', function(e) {
+                const cells = [...document.querySelectorAll('.otp-cell')];
+                const index = cells.indexOf(e.target);
+                const value = e.target.value.replace(/\D/g, '');
+
+                e.target.value = value;
+                e.target.classList.toggle('filled', !!value);
+
+                if (value && index < cells.length - 1) {
+                    cells[index + 1].focus();
+                }
+            });
+
+            document.getElementById('otpGrid').addEventListener('keydown', function(e) {
+                const cells = [...document.querySelectorAll('.otp-cell')];
+                const index = cells.indexOf(e.target);
+
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    cells[index - 1].value = '';
+                    cells[index - 1].classList.remove('filled');
+                    cells[index - 1].focus();
+                }
+            });
+
+            document.getElementById('otpGrid').addEventListener('paste', function(e) {
+                e.preventDefault();
+
+                const pastedData = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+                const cells = [...document.querySelectorAll('.otp-cell')];
+
+                pastedData.split('').forEach((char, i) => {
+                    if (cells[i]) {
+                        cells[i].value = char;
+                        cells[i].classList.add('filled');
+                    }
+                });
+
+                if (cells[pastedData.length - 1]) {
+                    cells[pastedData.length - 1].focus();
+                }
+            });
+
+            async function resendOtp() {
+                Vault.loader.show('Resending…');
+
+                try {
+                    const response = await apiCall(`${API_ENDPOINTS.sendOtp}?email=${encodeURIComponent(sessionState.email)}`, 'GET');
+
+                    if (response.ok && response.data.isSuccess) {
+                        sessionState.otpKey = response.data.result;
+                        Vault.alert('success', 'OTP resent.', 4000);
+                        startTimer();
+                        clearOtpFields();
+                        setTimeout(() => document.querySelector('.otp-cell').focus(), 50);
+                    } else {
+                        Vault.alert('error', response.data.message || 'Could not resend.');
+                    }
+                } catch (error) {
+                    Vault.alert('error', 'Network error.');
+                } finally {
+                    Vault.loader.hide();
+                }
+            }
+
+            async function verifyOtp() {
+                const otp = getOtpValue();
+
+                if (otp.length < 6) {
+                    Vault.alert('warning', 'Enter all 6 digits.', 4000);
+                    return;
+                }
+
+                setButtonLoading('btn-votp', 'spin-votp', 'ico-votp', true);
+                Vault.loader.show('Verifying…');
+
+                try {
+                    const response = await apiCall(API_ENDPOINTS.verifyOtp, 'POST', {
+                        otp: otp,
+                        otpKey: sessionState.otpKey
+                    });
+
+                    if (response.ok && response.data.isSuccess) {
+                        document.getElementById('rp-email').value = sessionState.email;
+                        goPanel('p-fp3');
+                        Vault.alert('success', 'OTP verified!', 4000);
+                    } else {
+                        Vault.alert('error', response.data.message || 'Invalid OTP.');
+
+                        const otpGrid = document.getElementById('otpGrid');
+                        otpGrid.classList.remove('otp-shake');
+                        void otpGrid.offsetWidth;
+                        otpGrid.classList.add('otp-shake');
+                    }
+                } catch (error) {
+                    Vault.alert('error', 'Network error.');
+                } finally {
+                    Vault.loader.hide();
+                    setButtonLoading('btn-votp', 'spin-votp', 'ico-votp', false);
+                }
+            }
+
+            document.getElementById('loginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const email = document.getElementById('l-email').value.trim();
+                const password = document.getElementById('l-pw').value;
+
+                let isValid = true;
+                isValid = validateField('l-email', 'e-l-email', isValidEmail(email)) && isValid;
+                isValid = validateField('l-pw', 'e-l-pw', !!password) && isValid;
+
+                if (!isValid) return;
+
+                setButtonLoading('btn-login', 'spin-login', 'ico-login', true);
+                Vault.loader.show('Signing you in…');
+
+                try {
+                    const response = await apiCall(API_ENDPOINTS.login, 'POST', {
+                        email: email,
+                        password: password
+                    });
+
+                    if (response.ok && response.data.isSuccess) {
+                        Vault.alert('success', response.data.message || 'Welcome back!', 3000);
+                        setTimeout(() => window.location.href = '/Home/VaultUser', 1400);
+                    } else {
+                        Vault.alert('error', response.data.message || 'Invalid credentials.');
+                    }
+                } catch (error) {
+                    Vault.alert('error', 'Network error.');
+                } finally {
+                    Vault.loader.hide();
+                    setButtonLoading('btn-login', 'spin-login', 'ico-login', false);
+                }
+            });
+
+            document.getElementById('signupForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const fullName = document.getElementById('s-name').value.trim();
+                const email = document.getElementById('s-email').value.trim();
+                const nationality = document.getElementById('s-nat').value.trim();
+                const password = document.getElementById('s-pw').value;
+                const confirmPassword = document.getElementById('s-cpw').value;
+
+                let isValid = true;
+                isValid = validateField('s-name', 'e-s-name', !!fullName) && isValid;
+                isValid = validateField('s-email', 'e-s-email', isValidEmail(email)) && isValid;
+                isValid = validateField('s-pw', 'e-s-pw', new RegExp(PASSWORD_REGEX).test(password)) && isValid;
+                isValid = validateField('s-cpw', 'e-s-cpw', password === confirmPassword) && isValid;
+
+                if (!isValid) return;
+
+                setButtonLoading('btn-signup', 'spin-signup', 'ico-signup', true);
+                Vault.loader.show('Creating account…');
+
+                try {
+                    const response = await apiCall(API_ENDPOINTS.register, 'POST', {
+                        email: email,
+                        password: password,
+                        fullName: fullName,
+                        nationlity: nationality
+                    });
+
+                    if (response.ok && response.data.isSuccess) {
+                        Vault.alert('success', response.data.message || 'Account created!');
+                        setTimeout(() => {
+                            switchTab('login');
+                            document.getElementById('l-email').value = email;
+                        }, 1200);
+                    } else {
+                        Vault.alert('error', response.data.message || 'Registration failed.');
+                    }
+                } catch (error) {
+                    Vault.alert('error', 'Network error.');
+                } finally {
+                    Vault.loader.hide();
+                    setButtonLoading('btn-signup', 'spin-signup', 'ico-signup', false);
+                }
+            });
+
+            document.getElementById('fp1Form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const email = document.getElementById('fp-email').value.trim();
+
+                if (!validateField('fp-email', 'e-fp-email', isValidEmail(email))) return;
+
+                setButtonLoading('btn-fp1', 'spin-fp1', 'ico-fp1', true);
+                Vault.loader.show('Sending OTP…');
+
+                try {
+                    const response = await apiCall(`${API_ENDPOINTS.sendOtp}?email=${encodeURIComponent(email)}`, 'GET');
+
+                    if (response.ok && response.data.isSuccess) {
+                        sessionState.email = email;
+                        sessionState.otpKey = response.data.result;
+
+                        document.getElementById('otp-sub').textContent = `We sent a 6-digit OTP to ${email}`;
+                        clearOtpFields();
+                        goPanel('p-fp2');
+                        startTimer();
+                        setTimeout(() => document.querySelector('.otp-cell').focus(), 80);
+                        Vault.alert('info', `OTP sent to ${email}`, 5000);
+                    } else {
+                        Vault.alert('error', response.data.message || 'Could not send OTP.');
+                    }
+                } catch (error) {
+                    Vault.alert('error', 'Network error.');
+                } finally {
+                    Vault.loader.hide();
+                    setButtonLoading('btn-fp1', 'spin-fp1', 'ico-fp1', false);
+                }
+            });
+
+            document.getElementById('resetForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const password = document.getElementById('rp-pw').value;
+                const confirmPassword = document.getElementById('rp-cpw').value;
+
+                let isValid = true;
+                isValid = validateField('rp-pw', 'e-rp-pw', new RegExp(PASSWORD_REGEX).test(password)) && isValid;
+                isValid = validateField('rp-cpw', 'e-rp-cpw', password === confirmPassword) && isValid;
+
+                if (!isValid) return;
+
+                setButtonLoading('btn-reset', 'spin-reset', 'ico-reset', true);
+                Vault.loader.show('Updating password…');
+
+                try {
+                    const response = await apiCall(API_ENDPOINTS.updatePassword, 'POST', {
+                        email: sessionState.email,
+                        password: password
+                    });
+
+                    if (response.ok && response.data.isSuccess) {
+                        Vault.alert('success', 'Password updated!', 5000);
+                        setTimeout(() => {
+                            goPanel('p-main');
+                            switchTab('login');
+                            document.getElementById('l-email').value = sessionState.email;
+                        }, 1500);
+                    } else {
+                        Vault.alert('error', response.data.message || 'Could not update password.');
+                    }
+                } catch (error) {
+                    Vault.alert('error', 'Network error.');
+                } finally {
+                    Vault.loader.hide();
+                    setButtonLoading('btn-reset', 'spin-reset', 'ico-reset', false);
+                }
+            });
+
+            window.goPanel = goPanel;
+            window.switchTab = switchTab;
+            window.togglePasswordVisibility = togglePasswordVisibility;
+            window.checkPasswordStrength = checkPasswordStrength;
+            window.resendOtp = resendOtp;
+            window.verifyOtp = verifyOtp;
+        })();
+    </script>
+</body>
+</html>
