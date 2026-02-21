@@ -579,7 +579,6 @@
                             <div class="vf">
                                 <div class="d-flex justify-content-between align-items-center" style="margin-bottom:.38rem;">
                                     <label for="l-pw" style="margin-bottom:0;">Password</label>
-                                    <button type="button" class="lbtn" style="font-size:.76rem;" onclick="goPanel('p-fp1')">Forgot password?</button>
                                 </div>
                                 <div class="vi-wrap">
                                     <input type="password" id="l-pw" class="vi" placeholder="••••••••" autocomplete="current-password" required />
@@ -590,7 +589,9 @@
                                 </div>
                                 <div class="ferr" id="e-l-pw">Password is required.</div>
                             </div>
-
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="lbtn" style="font-size:.76rem;" onclick="goPanel('p-fp1')">Forgot password?</button>
+                            </div>
                             <button type="submit" class="btn-auth" id="btn-login">
                                 <div class="btn-spin" id="spin-login"></div>
                                 <i class="bi bi-box-arrow-in-right" id="ico-login"></i>

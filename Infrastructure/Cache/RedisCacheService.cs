@@ -9,10 +9,10 @@ namespace Infrastructure.Cache
 
         public async Task<T?> GetAsync<T>(string keyName, CancellationToken ctx = default)
         {
-            var cachedData = _cache.GetAsync(keyName, ctx);
+            var cachedData = await _cache.GetAsync(keyName, ctx);
             if (cachedData == null)
                 return default;
-            return JsonSerializer.Deserialize<T?>(await cachedData);
+            return JsonSerializer.Deserialize<T?>(cachedData);
 
         }
 

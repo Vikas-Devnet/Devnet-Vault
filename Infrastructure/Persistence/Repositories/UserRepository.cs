@@ -113,7 +113,7 @@ public class UserRepository(AppDbContext db) : IUserRepository
             .SetProperty(y => y.UpdatedAt, DateTime.UtcNow)
             .SetProperty(y => y.UpdatedBy, ipAddress), ctx
             );
-
+            await trans.CommitAsync(ctx);
             return changes > 0;
         }
         catch (Exception)

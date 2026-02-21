@@ -9,6 +9,6 @@ public class OtpValidationDto
     public string Otp { get; set; } = string.Empty;
 
     [Required]
-    [StringLength(10, MinimumLength = 3)]
+    [StringLength(100, MinimumLength = 3)]
     public string OtpKey { get; set; } = string.Empty;
 }

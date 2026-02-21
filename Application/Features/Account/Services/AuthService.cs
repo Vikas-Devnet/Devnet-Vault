@@ -185,13 +185,17 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
     {
         var user = await users.GetByEmailAsync(email, ctx);
         if (user == null) return ServiceResponseGenerator<bool>.Failure("Email does not Exists");
+
+        if (!hasher.Verify(password, user.PasswordHash))
+            return ServiceResponseGenerator<bool>.Failure("New password cannot be same as old password");
+
         if (user.IsDeleted)
             return ServiceResponseGenerator<bool>.Failure("Account has been deleted");
 
         if (!user.IsActive)
             return ServiceResponseGenerator<bool>.Failure("Account has been deactivated");
 
-        var isUpdated = await users.UpdatePassword(user.UserId, password, ipAddress, ctx);
+        var isUpdated = await users.UpdatePassword(user.UserId, hasher.Hash(password), ipAddress, ctx);
         if (isUpdated)
             return ServiceResponseGenerator<bool>.Success("Password updated successfully", true);
         return ServiceResponseGenerator<bool>.Failure("Password update failed");
