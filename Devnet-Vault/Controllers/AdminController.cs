@@ -6,7 +6,7 @@ public class AdminController : Controller
 {
     public IActionResult Auth()
     {
-        return View("Views/Admin/Auth/Index.cshtml");
+        return View();
     }
 
     public IActionResult Home()

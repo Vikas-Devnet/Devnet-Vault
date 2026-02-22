@@ -186,7 +186,7 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
         var user = await users.GetByEmailAsync(email, ctx);
         if (user == null) return ServiceResponseGenerator<bool>.Failure("Email does not Exists");
 
-        if (!hasher.Verify(password, user.PasswordHash))
+        if (hasher.Verify(password, user.PasswordHash))
             return ServiceResponseGenerator<bool>.Failure("New password cannot be same as old password");
 
         if (user.IsDeleted)

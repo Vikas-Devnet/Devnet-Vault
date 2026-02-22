@@ -1040,7 +1040,7 @@
 
                     if (response.ok && response.data.isSuccess) {
                         Vault.alert('success', response.data.message || 'Welcome back!', 3000);
-                        setTimeout(() => window.location.href = '/Home/VaultUser', 1400);
+                        setTimeout(() => window.location.href = '/Users/Home', 1400);
                     } else {
                         Vault.alert('error', response.data.message || 'Invalid credentials.');
                     }
