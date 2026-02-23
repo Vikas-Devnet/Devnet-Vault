@@ -3,7 +3,7 @@ using Application.Features.Common.Interfaces;
 using Application.Features.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Application.DI;
+namespace Application;
 
 public static class DependencyInjection
 {
