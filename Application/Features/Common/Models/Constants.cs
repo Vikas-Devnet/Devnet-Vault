@@ -9,5 +9,5 @@ public static class TimeConstants
 {
     public const int AccessTokenExpireTime = 10;
     public const int RefreshTokenExpireTime = 7;
-    public const int OtpExpireTime = 5;
+    public const int OtpExpireTime = 1;
 }

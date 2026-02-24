@@ -1,4 +1,5 @@
 ﻿using Application.Features.Account.Dtos;
+using Application.Features.Account.Interfaces;
 using Application.Features.Account.Services;
 using Application.Features.Common.Interfaces;
 using Application.Features.Common.Models;
@@ -10,7 +11,7 @@ namespace Presentation.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AccountController(AuthService _auth, IUtilitiesService _utilitiesService) : ControllerBase
+public class AccountController(AuthService _auth, IProfileService _profileService, IUtilitiesService _utilitiesService) : ControllerBase
 {
 
     [HttpPost("login")]
@@ -130,6 +131,21 @@ public class AccountController(AuthService _auth, IUtilitiesService _utilitiesSe
         Response.Cookies.Append(CookieConstants.AccessToken, token.AccessToken, accessTokenOptions);
 
         Response.Cookies.Append(CookieConstants.RefreshToken, token.AccessRefreshToken, refreshTokenOptions);
+    }
+
+    [HttpGet("profile")]
+    public async Task<IActionResult> Profile()
+    {
+        var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        if (userIdClaim == null) return BadRequest();
+
+        if (!Guid.TryParse(userIdClaim, out Guid userGuid)) return BadRequest();
+        var response = await _profileService.GetProfileAsync(userGuid);
+
+        if (response.IsSuccess)
+            return Ok(response);
+
+        return NotFound(response);
     }
 
 }

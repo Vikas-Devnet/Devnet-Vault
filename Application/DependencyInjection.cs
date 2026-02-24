@@ -1,4 +1,5 @@
-﻿using Application.Features.Account.Services;
+﻿using Application.Features.Account.Interfaces;
+using Application.Features.Account.Services;
 using Application.Features.Common.Interfaces;
 using Application.Features.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ public static class DependencyInjection
         services.AddScoped<AuthService>();
         services.AddScoped<IUtilitiesService, UtilitiesService>();
         services.AddScoped<IOtpService, OtpService>();
+        services.AddScoped<IProfileService, ProfileService>();
 
 
         return services;
