@@ -17,7 +17,7 @@ public class HomeController(IOptions<HomeSettings> _homeOptions) : Controller
     {
         ViewBag.PrivacyPolicyUpdatedDate = homeSettings.PrivacyPolicyUpdatedDate;
         ViewBag.SupportEmailAddress = homeSettings.SupportEmail;
-        return View("Views/Auth/Index.cshtml");
+        return View();
     }
 
     public IActionResult TermsConditions()

@@ -1040,9 +1040,7 @@
                         const data = await res.json();
                         Vault.loader.hide();
                         if (data.isSuccess) {
-                            await fetch('/api/account/logout?logOutAllDevices=true',
-                                { method: 'POST', credentials: 'include' });
-                            window.location.href = '/Home/Auth';
+                            window.location.href = '/Users/Auth';
                         } else {
                             Vault.alert('error', data.message || 'Delete failed.', 4000);
                         }
