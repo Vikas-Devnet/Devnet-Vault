@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using Domain.Entities.Account;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,15 +17,34 @@ public class UserRepository(AppDbContext db) : IUserRepository
 
     public async Task<UserMaster?> AddAsync(UserMaster user, CancellationToken ctx = default)
     {
+        using var trans = db.Database.BeginTransaction();
         try
         {
             db.UserMaster.Add(user);
             var changes = await db.SaveChangesAsync(ctx);
-            return changes > 0 ? user : null;
+            if (changes > 0)
+            {
+                AccountDetails accountDetails = new()
+                {
+                    UserId = user.UserId,
+                    SubscriptionId = 0, // Default subscription
+                };
+                db.AccountDetails.Add(accountDetails);
+                changes += await db.SaveChangesAsync(ctx);
+            }
+            if (changes == 2)
+            {
+                await trans.CommitAsync(ctx);
+                return user;
+            }
+            trans.Rollback();
+
+            return null;
         }
         catch (Exception)
         {
             db.ChangeTracker.Clear();
+            trans.Rollback();
             throw;
         }
     }

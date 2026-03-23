@@ -1,6 +1,6 @@
 ﻿using Domain.Common.Models;
 
-namespace Domain.Entities;
+namespace Domain.Entities.Account;
 
 public class UserMaster : AuditProperty
 {
@@ -15,4 +15,6 @@ public class UserMaster : AuditProperty
     public bool IsDeleted { get; set; } = false;
 
     public ICollection<RefreshTokens> RefreshTokens { get; set; } = [];
+    public AccountDetails AccountDetails { get; set; } = null!;
+
 }

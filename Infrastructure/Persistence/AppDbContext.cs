@@ -1,5 +1,6 @@
 ﻿using Domain.Common.Models;
-using Domain.Entities;
+using Domain.Entities.Account;
+using Domain.Entities.Subsciption;
 using Infrastructure.Persistence.EntitiesConfig;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,12 +10,20 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<UserMaster> UserMaster => Set<UserMaster>();
     public DbSet<RefreshTokens> RefreshTokens => Set<RefreshTokens>();
+    public DbSet<AccountDetails> AccountDetails => Set<AccountDetails>();
+    public DbSet<SubscriptionMaster> SubscriptionMaster => Set<SubscriptionMaster>();
+    public DbSet<FeatureMaster> FeatureMaster => Set<FeatureMaster>();
+    public DbSet<SubscriptionFeature> SubscriptionFeature => Set<SubscriptionFeature>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfiguration(new UserMasterConfig());
         modelBuilder.ApplyConfiguration(new RefreshTokenConfig());
+        modelBuilder.ApplyConfiguration(new AccountDetailsConfig());
+        modelBuilder.ApplyConfiguration(new SubsciptionMasterConfig());
+        modelBuilder.ApplyConfiguration(new FeatureMasterConfig());
+        modelBuilder.ApplyConfiguration(new SubscriptionFeaturesConfig());
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {

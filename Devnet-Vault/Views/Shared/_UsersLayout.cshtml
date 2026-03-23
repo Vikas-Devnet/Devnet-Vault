@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var name = User.FindFirst("name")?.Value ?? "User";
+    var initials = string.Join("", name.Split(' ').Select(x => x[0])).ToUpper();
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -688,7 +692,7 @@
             <!-- Avatar + dropdown -->
             <div class="vapp-avatar" id="avatarBtn" onclick="toggleProfileMenu()"
                  title="Account">
-                @(ViewData["UserInitials"] ?? "U")
+                @(initials)
             </div>
         </div>
     </div>
@@ -696,9 +700,9 @@
     <!-- Profile dropdown -->
     <div class="vapp-profile-menu" id="profileMenu">
         <div class="vpm-header">
-            <div class="vpm-avatar-lg">@(ViewData["UserInitials"] ?? "U")</div>
+            <div class="vpm-avatar-lg">@(initials)</div>
             <div>
-                <div class="vpm-name">@(ViewData["UserName"] ?? "Vault User")</div>
+                <div class="vpm-name">@(name)</div>
                 <div class="vpm-email">@(ViewData["UserEmail"] ?? "")</div>
             </div>
         </div>

@@ -13,7 +13,7 @@ namespace Presentation.Controllers;
 [ApiController]
 public class AccountController(AuthService _auth, IProfileService _profileService, IUtilitiesService _utilitiesService) : ControllerBase
 {
-
+    #region Authentication Endpoints
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginUserDto loginUserDto)
     {
@@ -65,7 +65,7 @@ public class AccountController(AuthService _auth, IProfileService _profileServic
         var response = await _auth.LogOutUser(logOutAllDevices, _utilitiesService.ExtractIpAddress(HttpContext), userIdClaim, HttpContext.RequestAborted);
         if (response.IsSuccess)
         {
-            Response.Cookies.Delete(CookieConstants.RefreshToken);
+            Response.Cookies.Delete(CookieConstants.AccessToken);
             Response.Cookies.Delete(CookieConstants.RefreshToken);
             return Ok(response);
         }
@@ -132,8 +132,11 @@ public class AccountController(AuthService _auth, IProfileService _profileServic
 
         Response.Cookies.Append(CookieConstants.RefreshToken, token.AccessRefreshToken, refreshTokenOptions);
     }
+    #endregion
 
+    #region Profile Endpoints
     [HttpGet("profile/getById")]
+    [Authorize]
     public async Task<IActionResult> GetProfileById()
     {
         var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
@@ -149,6 +152,7 @@ public class AccountController(AuthService _auth, IProfileService _profileServic
     }
 
     [HttpGet("profile/getAll")]
+    [Authorize]
     public async Task<IActionResult> GetAllProfile()
     {
         var response = await _profileService.GetAllProfilesAsync(HttpContext.RequestAborted);
@@ -160,6 +164,7 @@ public class AccountController(AuthService _auth, IProfileService _profileServic
     }
 
     [HttpPut("profile/update")]
+    [Authorize]
     public async Task<IActionResult> UpdateProfile(UserProfile profile)
     {
         var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
@@ -172,6 +177,7 @@ public class AccountController(AuthService _auth, IProfileService _profileServic
     }
 
     [HttpDelete("profile/delete")]
+    [Authorize]
     public async Task<IActionResult> DeleteProfile()
     {
         var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
@@ -182,4 +188,5 @@ public class AccountController(AuthService _auth, IProfileService _profileServic
             return Ok(response);
         return NotFound(response);
     }
+    #endregion
 }

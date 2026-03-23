@@ -2,7 +2,7 @@
 using Application.Features.Account.Interfaces;
 using Application.Features.Common.Interfaces;
 using Application.Features.Common.Models;
-using Domain.Entities;
+using Domain.Entities.Account;
 using Domain.Interfaces;
 
 namespace Application.Features.Account.Services;

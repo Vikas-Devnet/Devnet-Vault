@@ -1,6 +1,6 @@
 ﻿using Domain.Common.Models;
 
-namespace Domain.Entities;
+namespace Domain.Entities.Account;
 
 public class RefreshTokens : AuditProperty
 {
