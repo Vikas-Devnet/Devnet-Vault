@@ -113,13 +113,73 @@ public class UserRepository(AppDbContext db) : IUserRepository
             .SetProperty(y => y.UpdatedAt, DateTime.UtcNow)
             .SetProperty(y => y.UpdatedBy, ipAddress), ctx
             );
-            await trans.CommitAsync(ctx);
+            if (changes > 0)
+                await trans.CommitAsync(ctx);
+            else
+                trans.Rollback();
+
             return changes > 0;
         }
         catch (Exception)
         {
             db.ChangeTracker.Clear();
             trans.Rollback();
+            throw;
+        }
+    }
+
+    public async Task<bool> DeleteProfileAsync(Guid userId, string ipAddress, CancellationToken ctx = default)
+    {
+        await using var trans = db.Database.BeginTransaction();
+        try
+        {
+            await db.RefreshTokens.Where(re => re.UserId == userId)
+                   .ExecuteUpdateAsync(r => r.SetProperty(x => x.IsRevoked, true)
+                   .SetProperty(x => x.UpdatedAt, DateTime.UtcNow)
+                   .SetProperty(x => x.UpdatedBy, ipAddress), ctx);
+            var changes = await db.UserMaster.Where(e => e.UserId == userId && e.IsDeleted == false && e.IsActive).ExecuteUpdateAsync(
+            x => x.SetProperty(y => y.IsActive, false)
+                  .SetProperty(y => y.IsDeleted, true)
+                  .SetProperty(y => y.UpdatedAt, DateTime.UtcNow)
+                  .SetProperty(y => y.UpdatedBy, ipAddress), ctx
+            );
+            if (changes > 0)
+                await trans.CommitAsync(ctx);
+            else
+                trans.Rollback();
+
+            return changes > 0;
+        }
+        catch (Exception)
+        {
+            db.ChangeTracker.Clear();
+            trans.Rollback();
+            throw;
+        }
+    }
+
+    public Task<List<UserMaster>> GetAllUsersAsync(CancellationToken ctx = default)
+        => db.UserMaster.AsNoTracking().Where(x => x.IsDeleted == false && x.IsActive).ToListAsync(ctx);
+
+    public Task<UserMaster?> GetUserByIdAsync(Guid userId, CancellationToken ctx = default)
+        => db.UserMaster.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == userId && x.IsDeleted == false && x.IsActive, ctx);
+
+    public async Task<bool> UpdateUserDetailsAsync(string fullName, string email, string nationality, bool isEmailConfirmed, Guid userId, CancellationToken ctx = default)
+    {
+        try
+        {
+            var changes = await db.UserMaster.Where(e => e.UserId == userId && e.IsDeleted == false && e.IsActive).ExecuteUpdateAsync(
+                u => u.SetProperty(x => x.FullName, fullName)
+                .SetProperty(x => x.Email, email)
+                .SetProperty(x => x.Nationality, nationality)
+                .SetProperty(x => x.IsEmailConfirmed, isEmailConfirmed), ctx);
+
+            return changes > 0;
+
+        }
+        catch (Exception)
+        {
+            db.ChangeTracker.Clear();
             throw;
         }
     }

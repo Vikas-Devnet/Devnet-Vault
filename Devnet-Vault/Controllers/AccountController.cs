@@ -133,14 +133,14 @@ public class AccountController(AuthService _auth, IProfileService _profileServic
         Response.Cookies.Append(CookieConstants.RefreshToken, token.AccessRefreshToken, refreshTokenOptions);
     }
 
-    [HttpGet("profile")]
-    public async Task<IActionResult> Profile()
+    [HttpGet("profile/getById")]
+    public async Task<IActionResult> GetProfileById()
     {
         var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
         if (userIdClaim == null) return BadRequest();
 
         if (!Guid.TryParse(userIdClaim, out Guid userGuid)) return BadRequest();
-        var response = await _profileService.GetProfileAsync(userGuid);
+        var response = await _profileService.GetProfileAsync(userGuid, HttpContext.RequestAborted);
 
         if (response.IsSuccess)
             return Ok(response);
@@ -148,4 +148,38 @@ public class AccountController(AuthService _auth, IProfileService _profileServic
         return NotFound(response);
     }
 
+    [HttpGet("profile/getAll")]
+    public async Task<IActionResult> GetAllProfile()
+    {
+        var response = await _profileService.GetAllProfilesAsync(HttpContext.RequestAborted);
+
+        if (response.IsSuccess)
+            return Ok(response);
+
+        return NotFound(response);
+    }
+
+    [HttpPut("profile/update")]
+    public async Task<IActionResult> UpdateProfile(UserProfile profile)
+    {
+        var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        if (userIdClaim == null) return BadRequest();
+        if (!Guid.TryParse(userIdClaim, out Guid userGuid)) return BadRequest();
+        var response = await _profileService.UpdateProfileAsync(profile, userGuid, HttpContext.RequestAborted);
+        if (response.IsSuccess)
+            return Ok(response);
+        return NotFound(response);
+    }
+
+    [HttpDelete("profile/delete")]
+    public async Task<IActionResult> DeleteProfile()
+    {
+        var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        if (userIdClaim == null) return BadRequest();
+        if (!Guid.TryParse(userIdClaim, out Guid userGuid)) return BadRequest();
+        var response = await _profileService.DeleteProfileAsync(userGuid, _utilitiesService.ExtractIpAddress(HttpContext), HttpContext.RequestAborted);
+        if (response.IsSuccess)
+            return Ok(response);
+        return NotFound(response);
+    }
 }

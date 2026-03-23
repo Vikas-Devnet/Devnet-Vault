@@ -5,8 +5,8 @@ namespace Application.Features.Account.Interfaces;
 
 public interface IProfileService
 {
-    Task<ServiceResponseGenerator<UserProfile>> GetProfileAsync(Guid id);
-    Task<ServiceResponseGenerator<IEnumerable<UserProfile>>> GetAllProfilesAsync();
-    Task<ServiceResponseGenerator<UserProfile>> UpdateProfileAsync(UserProfile profile);
-    Task<ServiceResponseGenerator<bool>> DeleteProfileAsync(Guid id);
+    Task<ServiceResponseGenerator<bool>> DeleteProfileAsync(Guid id, string ipAddress, CancellationToken ctx = default);
+    Task<ServiceResponseGenerator<List<UserProfile>>> GetAllProfilesAsync(CancellationToken ctx = default);
+    Task<ServiceResponseGenerator<UserProfile>> GetProfileAsync(Guid id, CancellationToken ctx = default);
+    Task<ServiceResponseGenerator<UserProfile>> UpdateProfileAsync(UserProfile profile, Guid id, CancellationToken ctx = default);
 }
