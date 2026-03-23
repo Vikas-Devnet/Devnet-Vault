@@ -19,6 +19,9 @@ builder.Services.AddPresentation(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseCors("Allow_Vault_Client");
+app.UseAuthentication(); 
+app.UseAuthorization(); 
 app.UsePresentation();
 app.MapControllers();
 app.MapDefaultControllerRoute();

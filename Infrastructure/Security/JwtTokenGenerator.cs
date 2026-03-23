@@ -13,7 +13,7 @@ public class JwtTokenGenerator(IOptions<JwtSettings> jwtSettingsOption) : IJwtTo
 {
     private readonly JwtSettings _jwtSettings = jwtSettingsOption.Value;
 
-    public (string token, DateTime expireTime) GenerateToken(Guid userId, string email)
+    public (string token, DateTime expireTime) GenerateToken(Guid userId, string email, string fullname)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
 
@@ -22,6 +22,7 @@ public class JwtTokenGenerator(IOptions<JwtSettings> jwtSettingsOption) : IJwtTo
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            new Claim(JwtRegisteredClaimNames.Name, fullname),
             new Claim(JwtRegisteredClaimNames.Email, email),
         };
         var expireTime = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes);

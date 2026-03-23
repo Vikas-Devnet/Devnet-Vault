@@ -9,10 +9,10 @@ namespace Application.Features.Account.Services;
 
 public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpService _otpService, IEmailQueue _emailQueue, IJwtTokenGenerator jwtTokenGenerator)
 {
-    public async Task<ServiceResponseGenerator<UserMaster>> Signup(SignupDto dto, CancellationToken ctx = default)
+    public async Task<ServiceResponseGenerator<bool>> Signup(SignupDto dto, CancellationToken ctx = default)
     {
         var existing = await users.GetByEmailAsync(dto.Email, ctx);
-        if (existing != null) return ServiceResponseGenerator<UserMaster>.Failure("Email already Exists");
+        if (existing != null) return ServiceResponseGenerator<bool>.Failure("Email already Exists");
 
         var user = new UserMaster
         {
@@ -25,9 +25,9 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
 
         var response = await users.AddAsync(user, ctx);
         if (response == null)
-            return ServiceResponseGenerator<UserMaster>.Failure("Failed to register user");
+            return ServiceResponseGenerator<bool>.Failure("Failed to register user");
 
-        return ServiceResponseGenerator<UserMaster>.Success("User Registered Successfully", user);
+        return ServiceResponseGenerator<bool>.Success("User Registered Successfully", true);
     }
 
     public async Task<ServiceResponseGenerator<AuthResponseDto>> Login(LoginUserDto dto, string ipAddress, CancellationToken ctx = default)
@@ -44,7 +44,7 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
         if (!user.IsActive)
             return ServiceResponseGenerator<AuthResponseDto>.Failure("Account has been deactivated");
 
-        var (token, expireTime) = jwtTokenGenerator.GenerateToken(user.UserId, user.Email);
+        var (token, expireTime) = jwtTokenGenerator.GenerateToken(user.UserId, user.Email, user.FullName);
         if (string.IsNullOrEmpty(token))
             return ServiceResponseGenerator<AuthResponseDto>.Failure("Failed to generate security token");
         var refreshToken = jwtTokenGenerator.GenerateRefreshToken();
@@ -89,7 +89,7 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
         if (userDetails == null)
             return ServiceResponseGenerator<AuthResponseDto>.Failure("User details not found");
 
-        var (token, expireTime) = jwtTokenGenerator.GenerateToken(refreshTokenDetails.UserId, userDetails.Email);
+        var (token, expireTime) = jwtTokenGenerator.GenerateToken(refreshTokenDetails.UserId, userDetails.Email, userDetails.FullName);
         if (string.IsNullOrEmpty(token))
             return ServiceResponseGenerator<AuthResponseDto>.Failure("Failed to generate security token");
 

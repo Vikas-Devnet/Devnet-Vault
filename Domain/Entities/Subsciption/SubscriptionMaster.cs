@@ -13,6 +13,7 @@ public class SubscriptionMaster : AuditProperty
     public int DurationInMonths { get; set; }
     public decimal DiscountPercentage { get; set; }
     public bool IsActive { get; set; } = true;
+    public bool IsDefault { get; set; } = false;
     public ICollection<SubscriptionFeature> SubscriptionFeatures { get; set; } = [];
     public ICollection<AccountDetails> AccountDetails { get; set; } = [];
 }

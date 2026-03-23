@@ -8,8 +8,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddControllers();
-
         // CORS
         var allowedOrigins = configuration
             .GetSection("CorsSettings:AllowedOrigins")
@@ -37,12 +35,17 @@ public static class DependencyInjection
             {
                 OnMessageReceived = context =>
                 {
-                    var token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
+                    var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
 
-                    if (string.IsNullOrEmpty(token))
-                        token = context.Request.Cookies["AccessToken"];
+                    if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
+                    {
+                        context.Token = authHeader["Bearer ".Length..].Trim();
+                    }
+                    else
+                    {
+                        context.Token = context.Request.Cookies["AccessToken"];
+                    }
 
-                    context.Token = token;
                     return Task.CompletedTask;
                 }
             };

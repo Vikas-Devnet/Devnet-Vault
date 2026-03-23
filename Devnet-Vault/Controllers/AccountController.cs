@@ -5,7 +5,7 @@ using Application.Features.Common.Interfaces;
 using Application.Features.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Presentation.Controllers;
 
@@ -57,7 +57,7 @@ public class AccountController(AuthService _auth, IProfileService _profileServic
     [Authorize]
     public async Task<IActionResult> Logout([FromQuery] bool logOutAllDevices)
     {
-        var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (string.IsNullOrEmpty(userIdClaim))
             return Unauthorized();
@@ -139,7 +139,7 @@ public class AccountController(AuthService _auth, IProfileService _profileServic
     [Authorize]
     public async Task<IActionResult> GetProfileById()
     {
-        var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return BadRequest();
 
         if (!Guid.TryParse(userIdClaim, out Guid userGuid)) return BadRequest();
@@ -165,12 +165,15 @@ public class AccountController(AuthService _auth, IProfileService _profileServic
 
     [HttpPut("profile/update")]
     [Authorize]
-    public async Task<IActionResult> UpdateProfile(UserProfile profile)
+    public async Task<IActionResult> UpdateProfile(UserProfileUpdateDto updateProfileRequest)
     {
-        var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return BadRequest();
         if (!Guid.TryParse(userIdClaim, out Guid userGuid)) return BadRequest();
-        var response = await _profileService.UpdateProfileAsync(profile, userGuid, HttpContext.RequestAborted);
+
+        _utilitiesService.TrimStrings(updateProfileRequest);
+
+        var response = await _profileService.UpdateProfileAsync(updateProfileRequest, userGuid, HttpContext.RequestAborted);
         if (response.IsSuccess)
             return Ok(response);
         return NotFound(response);
@@ -180,7 +183,7 @@ public class AccountController(AuthService _auth, IProfileService _profileServic
     [Authorize]
     public async Task<IActionResult> DeleteProfile()
     {
-        var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdClaim == null) return BadRequest();
         if (!Guid.TryParse(userIdClaim, out Guid userGuid)) return BadRequest();
         var response = await _profileService.DeleteProfileAsync(userGuid, _utilitiesService.ExtractIpAddress(HttpContext), HttpContext.RequestAborted);

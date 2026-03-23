@@ -14,6 +14,6 @@ public interface IUserRepository
     Task<bool> UpdatePassword(Guid userId, string password, string ipAddress, CancellationToken ctx = default);
     Task<bool> DeleteProfileAsync(Guid userId, string ipAddress, CancellationToken ctx = default);
     Task<List<UserMaster>> GetAllUsersAsync(CancellationToken ctx = default);
-    Task<UserMaster?> GetUserByIdAsync(Guid userId, CancellationToken ctx = default);
+    Task<UserMaster?> GetUserProfileByIdAsync(Guid userId, CancellationToken ctx = default);
     Task<bool> UpdateUserDetailsAsync(string fullName, string email, string nationality, bool isEmailConfirmed, Guid userId, CancellationToken ctx = default);
 }

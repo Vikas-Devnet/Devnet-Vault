@@ -1,5 +1,6 @@
-﻿@{
-    var name = User.FindFirst("name")?.Value ?? "User";
+﻿@using System.IdentityModel.Tokens.Jwt
+@{
+    var name = User.FindFirst(JwtRegisteredClaimNames.Name)?.Value ?? "User";
     var initials = string.Join("", name.Split(' ').Select(x => x[0])).ToUpper();
 }
 <!DOCTYPE html>
@@ -77,18 +78,6 @@
             gap: .55rem;
             text-decoration: none;
             flex-shrink: 0;
-        }
-
-        .vapp-brand-icon {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #2563EB, #6366F1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: .9rem;
         }
 
         .vapp-brand-name {
@@ -264,11 +253,6 @@
             color: var(--color-secondary);
             font-size: .95rem;
             line-height: 1.2;
-        }
-
-        .vpm-email {
-            font-size: .78rem;
-            color: var(--color-text-muted);
         }
 
         .vpm-item {
@@ -666,11 +650,13 @@
             <i class="bi bi-list"></i>
         </button>
 
-        <a class="vapp-brand" asp-area="" asp-controller="Home" asp-action="Index">
-            <div class="vapp-brand-icon"><i class="bi bi-shield-lock-fill"></i></div>
+        <a class="d-flex align-items-center gap-2 text-decoration-none"
+           asp-area="" asp-controller="Users" asp-action="Home">
+            <img src="~/favicon.ico"
+                 alt="Vault"
+                 style="width:38px; height:38px; object-fit:contain;">
             <span class="vapp-brand-name d-none d-md-block">Vault</span>
         </a>
-
         <div class="vapp-search">
             <i class="bi bi-search search-icon"></i>
             <input type="text" id="globalSearch" placeholder="Search in Vault…" autocomplete="off" />
@@ -684,11 +670,6 @@
                 <i class="bi bi-bell"></i>
                 <span class="vapp-notif-dot"></span>
             </button>
-            <button class="vapp-icon-btn" title="Settings"
-                    asp-area="" asp-controller="Home" asp-action="Settings">
-                <i class="bi bi-gear"></i>
-            </button>
-
             <!-- Avatar + dropdown -->
             <div class="vapp-avatar" id="avatarBtn" onclick="toggleProfileMenu()"
                  title="Account">
@@ -703,16 +684,15 @@
             <div class="vpm-avatar-lg">@(initials)</div>
             <div>
                 <div class="vpm-name">@(name)</div>
-                <div class="vpm-email">@(ViewData["UserEmail"] ?? "")</div>
             </div>
         </div>
-        <a class="vpm-item" asp-area="" asp-controller="Home" asp-action="Profile">
+        <a class="vpm-item" asp-area="" asp-controller="Users" asp-action="Profile">
             <i class="bi bi-person-circle"></i> My Profile
         </a>
-        <a class="vpm-item" asp-area="" asp-controller="Home" asp-action="Settings">
+        <a class="vpm-item" asp-area="" asp-controller="Users" asp-action="Settings">
             <i class="bi bi-gear"></i> Settings
         </a>
-        <a class="vpm-item" asp-area="" asp-controller="Home" asp-action="Storage">
+        <a class="vpm-item" asp-area="" asp-controller="Users" asp-action="Storage">
             <i class="bi bi-hdd"></i> Storage &amp; Plans
         </a>
         <div class="vpm-divider"></div>
@@ -738,35 +718,35 @@
         <div class="vapp-nav-label">Main</div>
 
         <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "home" ? "active" : "")"
-           asp-area="" asp-controller="Home" asp-action="VaultUser"
+           asp-area="" asp-controller="Users" asp-action="Home"
            data-tip="Home">
             <i class="bi bi-house-fill"></i>
             <span class="nav-label">Home</span>
         </a>
 
         <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "myfiles" ? "active" : "")"
-           asp-area="" asp-controller="Vault" asp-action="MyFiles"
+           asp-area="" asp-controller="Users" asp-action="MyFiles"
            data-tip="My Files">
             <i class="bi bi-folder2-open"></i>
             <span class="nav-label">My Files</span>
         </a>
 
         <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "shared" ? "active" : "")"
-           asp-area="" asp-controller="Vault" asp-action="Shared"
+           asp-area="" asp-controller="Users" asp-action="Shared"
            data-tip="Shared">
             <i class="bi bi-people-fill"></i>
             <span class="nav-label">Shared with me</span>
         </a>
 
         <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "recent" ? "active" : "")"
-           asp-area="" asp-controller="Vault" asp-action="Recent"
+           asp-area="" asp-controller="Users" asp-action="Recent"
            data-tip="Recent">
             <i class="bi bi-clock-history"></i>
             <span class="nav-label">Recent</span>
         </a>
 
         <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "starred" ? "active" : "")"
-           asp-area="" asp-controller="Vault" asp-action="Starred"
+           asp-area="" asp-controller="Users" asp-action="Starred"
            data-tip="Starred">
             <i class="bi bi-star-fill"></i>
             <span class="nav-label">Starred</span>
@@ -776,21 +756,21 @@
         <div class="vapp-nav-label">Vault</div>
 
         <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "passwords" ? "active" : "")"
-           asp-area="" asp-controller="Vault" asp-action="Passwords"
+           asp-area="" asp-controller="Users" asp-action="Passwords"
            data-tip="Passwords">
             <i class="bi bi-key-fill"></i>
             <span class="nav-label">Passwords</span>
         </a>
 
         <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "photos" ? "active" : "")"
-           asp-area="" asp-controller="Vault" asp-action="Photos"
+           asp-area="" asp-controller="Users" asp-action="Photos"
            data-tip="Photos">
             <i class="bi bi-images"></i>
             <span class="nav-label">Photos</span>
         </a>
 
         <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "docs" ? "active" : "")"
-           asp-area="" asp-controller="Vault" asp-action="Docs"
+           asp-area="" asp-controller="Users" asp-action="Docs"
            data-tip="Documents">
             <i class="bi bi-file-earmark-text-fill"></i>
             <span class="nav-label">Documents</span>
@@ -800,14 +780,14 @@
         <div class="vapp-nav-label">More</div>
 
         <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "trash" ? "active" : "")"
-           asp-area="" asp-controller="Vault" asp-action="Trash"
+           asp-area="" asp-controller="Users" asp-action="Trash"
            data-tip="Trash">
             <i class="bi bi-trash3-fill"></i>
             <span class="nav-label">Trash</span>
         </a>
 
         <a class="vapp-nav-item @(ViewData["ActivePage"]?.ToString() == "storage" ? "active" : "")"
-           asp-area="" asp-controller="Home" asp-action="Storage"
+           asp-area="" asp-controller="Users" asp-action="Storage"
            data-tip="Storage">
             <i class="bi bi-hdd-fill"></i>
             <span class="nav-label">Storage</span>
@@ -824,7 +804,7 @@
                      style="width:@(ViewData["StoragePercent"] ?? "0")%"></div>
             </div>
             <div class="storage-info">
-                <a asp-area="" asp-controller="Home" asp-action="Storage"
+                <a asp-area="" asp-controller="Users" asp-action="Storage"
                    style="color:var(--color-primary);text-decoration:none;font-size:.73rem;font-weight:600;">
                     Get more storage →
                 </a>
@@ -904,7 +884,7 @@
                         });
                     } catch {}
                     Vault.loader.hide();
-                    window.location.href = '/Home/Auth';
+                    window.location.href = '/Users/Auth';
                 }
             );
         }

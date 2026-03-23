@@ -24,10 +24,18 @@ public class UserRepository(AppDbContext db) : IUserRepository
             var changes = await db.SaveChangesAsync(ctx);
             if (changes > 0)
             {
+                var freePlan = await db.SubscriptionMaster.FirstOrDefaultAsync(x => x.IsDefault, ctx);
+
+                if (freePlan == null)
+                {
+                    trans.Rollback();
+                    return null;
+                }
+
                 AccountDetails accountDetails = new()
                 {
                     UserId = user.UserId,
-                    SubscriptionId = 0, // Default subscription
+                    SubscriptionId = freePlan.Id,
                 };
                 db.AccountDetails.Add(accountDetails);
                 changes += await db.SaveChangesAsync(ctx);
@@ -180,8 +188,9 @@ public class UserRepository(AppDbContext db) : IUserRepository
     public Task<List<UserMaster>> GetAllUsersAsync(CancellationToken ctx = default)
         => db.UserMaster.AsNoTracking().Where(x => x.IsDeleted == false && x.IsActive).ToListAsync(ctx);
 
-    public Task<UserMaster?> GetUserByIdAsync(Guid userId, CancellationToken ctx = default)
-        => db.UserMaster.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == userId && x.IsDeleted == false && x.IsActive, ctx);
+    public Task<UserMaster?> GetUserProfileByIdAsync(Guid userId, CancellationToken ctx = default)
+        => db.UserMaster.AsNoTracking().Include(x => x.AccountDetails)
+            .ThenInclude(a => a.SubscriptionMaster).FirstOrDefaultAsync(x => x.UserId == userId && x.IsDeleted == false && x.IsActive, ctx);
 
     public async Task<bool> UpdateUserDetailsAsync(string fullName, string email, string nationality, bool isEmailConfirmed, Guid userId, CancellationToken ctx = default)
     {
@@ -189,6 +198,8 @@ public class UserRepository(AppDbContext db) : IUserRepository
         {
             var changes = await db.UserMaster.Where(e => e.UserId == userId && e.IsDeleted == false && e.IsActive).ExecuteUpdateAsync(
                 u => u.SetProperty(x => x.FullName, fullName)
+                .SetProperty(x => x.UpdatedAt, DateTime.UtcNow)
+                .SetProperty(x => x.UpdatedBy, userId.ToString())
                 .SetProperty(x => x.Email, email)
                 .SetProperty(x => x.Nationality, nationality)
                 .SetProperty(x => x.IsEmailConfirmed, isEmailConfirmed), ctx);

@@ -16,41 +16,51 @@ public class ProfileService(IUserRepository users) : IProfileService
         return ServiceResponseGenerator<bool>.Failure("Failed to delete profile");
     }
 
-    public async Task<ServiceResponseGenerator<List<UserProfile>>> GetAllProfilesAsync(CancellationToken ctx = default)
+    public async Task<ServiceResponseGenerator<List<UserProfileResponseDto>>> GetAllProfilesAsync(CancellationToken ctx = default)
     {
         var usersProfile = await users.GetAllUsersAsync(ctx);
-        var profiles = usersProfile.Select(u => new UserProfile
+        var profiles = usersProfile.Select(u => new UserProfileResponseDto
         {
             FullName = u.FullName,
             Email = u.Email,
             Nationality = u.Nationality,
             IsEmailConfirmed = u.IsEmailConfirmed
         }).ToList();
-        return ServiceResponseGenerator<List<UserProfile>>.Success("Profiles retrieved successfully", profiles);
+        return ServiceResponseGenerator<List<UserProfileResponseDto>>.Success("Profiles retrieved successfully", profiles);
     }
 
-    public async Task<ServiceResponseGenerator<UserProfile>> GetProfileAsync(Guid id, CancellationToken ctx = default)
+    public async Task<ServiceResponseGenerator<UserProfileResponseDto>> GetProfileAsync(Guid id, CancellationToken ctx = default)
     {
-        var userProfile = await users.GetUserByIdAsync(id, ctx);
+        var userProfile = await users.GetUserProfileByIdAsync(id, ctx);
         if (userProfile is null)
-            return ServiceResponseGenerator<UserProfile>.Failure("Profile not found");
-        var profile = new UserProfile()
+            return ServiceResponseGenerator<UserProfileResponseDto>.Failure("Profile not found");
+        var profile = new UserProfileResponseDto()
         {
             FullName = userProfile.FullName,
             Email = userProfile.Email,
             Nationality = userProfile.Nationality,
-            IsEmailConfirmed = userProfile.IsEmailConfirmed
+            IsEmailConfirmed = userProfile.IsEmailConfirmed,
+            SubscriptionId = userProfile.AccountDetails.SubscriptionId,
+            SubscriptionName = userProfile.AccountDetails.SubscriptionMaster.PlanName,
+            SubscriptionExpiry = userProfile.AccountDetails.ExpiryDate
+
         };
-        return ServiceResponseGenerator<UserProfile>.Success("Profile retrieved successfully", profile);
+        return ServiceResponseGenerator<UserProfileResponseDto>.Success("Profile retrieved successfully", profile);
     }
 
-    public async Task<ServiceResponseGenerator<UserProfile>> UpdateProfileAsync(UserProfile profile, Guid id, CancellationToken ctx = default)
+    public async Task<ServiceResponseGenerator<bool>> UpdateProfileAsync(UserProfileUpdateDto profile, Guid id, CancellationToken ctx = default)
     {
         if (profile.FullName is null || profile.Email is null || profile.Nationality is null)
-            return ServiceResponseGenerator<UserProfile>.Failure("Invalid profile data");
+            return ServiceResponseGenerator<bool>.Failure("Invalid profile data");
+
+        var userDetails = await users.GetByEmailAsync(profile.Email, ctx);
+
+        if (userDetails is not null && userDetails.UserId != id)
+            return ServiceResponseGenerator<bool>.Failure("Email already in use");
+
         var isUpdated = await users.UpdateUserDetailsAsync(profile.FullName, profile.Email, profile.Nationality, profile.IsEmailConfirmed, id, ctx);
         if (isUpdated)
-            return ServiceResponseGenerator<UserProfile>.Success("Profile updated successfully", profile);
-        return ServiceResponseGenerator<UserProfile>.Failure("Failed to update profile");
+            return ServiceResponseGenerator<bool>.Success("Profile updated successfully", true);
+        return ServiceResponseGenerator<bool>.Failure("Failed to update profile");
     }
 }

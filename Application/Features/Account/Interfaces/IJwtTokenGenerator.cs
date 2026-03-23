@@ -2,6 +2,6 @@
 
 public interface IJwtTokenGenerator
 {
-    (string token, DateTime expireTime) GenerateToken(Guid userId, string email);
+    (string token, DateTime expireTime) GenerateToken(Guid userId, string email, string fullname);
     string GenerateRefreshToken();
 }
