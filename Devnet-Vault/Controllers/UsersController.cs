@@ -22,4 +22,10 @@ public class UsersController() : Controller
     {
         return View();
     }
+
+    public IActionResult Password()
+    {
+        ViewData["ActivePage"] = "password";
+        return View();
+    }
 }
