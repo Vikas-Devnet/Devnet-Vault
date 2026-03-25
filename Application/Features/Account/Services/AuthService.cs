@@ -7,12 +7,24 @@ using Domain.Interfaces;
 
 namespace Application.Features.Account.Services;
 
-public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpService _otpService, IEmailQueue _emailQueue, IJwtTokenGenerator jwtTokenGenerator)
+public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpService _otpService, IEmailQueue _emailQueue, IJwtTokenGenerator jwtTokenGenerator, ICryptoHelper cryptoHelper)
 {
     public async Task<ServiceResponseGenerator<bool>> Signup(SignupDto dto, CancellationToken ctx = default)
     {
         var existing = await users.GetByEmailAsync(dto.Email, ctx);
         if (existing != null) return ServiceResponseGenerator<bool>.Failure("Email already Exists");
+        var kdfSalt = cryptoHelper.GenerateRandomBytes(16);
+
+        // Master Key (MK)
+        var mk = cryptoHelper.DeriveKey(dto.Password, kdfSalt);
+        var backupMk = cryptoHelper.DeriveKey(dto.Email, kdfSalt);
+
+        // Data Key (DK)
+        var dk = cryptoHelper.GenerateRandomBytes(32);
+
+        // Encrypt DK using MK
+        var (encDK, iv, tag) = cryptoHelper.Encrypt(dk, mk);
+        var (bk_encDK, bk_iv, bk_tag) = cryptoHelper.Encrypt(dk, backupMk);
 
         var user = new UserMaster
         {
@@ -22,8 +34,19 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
             Nationality = dto.Nationlity,
             CreatedBy = "SignedUp"
         };
+        var userKey = new UserKey
+        {
+            PrimaryEncryptedDK = encDK,
+            PrimaryDK_IV = iv,
+            PrimaryDK_Tag = tag,
+            KdfSalt = kdfSalt,
+            BackupEncryptedDK = bk_encDK,
+            BackupDK_IV = bk_iv,
+            BackupDK_Tag = bk_tag,
+            CreatedBy = "SignedUp"
+        };
 
-        var response = await users.AddAsync(user, ctx);
+        var response = await users.AddAsync(user, userKey, ctx);
         if (response == null)
             return ServiceResponseGenerator<bool>.Failure("Failed to register user");
 
@@ -71,7 +94,11 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
             AccessTokenExpiryDate = expireTime,
             AccessRefreshToken = response.RefreshToken,
             RefreshTokenExpiryDate = refreshTokenObject.ExpiryDate,
-            CreatedDate = refreshTokenObject.CreatedAt
+            CreatedDate = refreshTokenObject.CreatedAt,
+            KdfSalt = Convert.ToBase64String(user.UserKey.KdfSalt),
+            EncryptedDK = Convert.ToBase64String(user.UserKey.PrimaryEncryptedDK),
+            DK_IV = Convert.ToBase64String(user.UserKey.PrimaryDK_IV),
+            DK_Tag = Convert.ToBase64String(user.UserKey.PrimaryDK_Tag)
         });
     }
 
@@ -94,7 +121,7 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
             return ServiceResponseGenerator<AuthResponseDto>.Failure("Failed to generate security token");
 
         var newRefreshToken = jwtTokenGenerator.GenerateRefreshToken();
-        if (string.IsNullOrEmpty(refreshToken))
+        if (string.IsNullOrEmpty(newRefreshToken))
             return ServiceResponseGenerator<AuthResponseDto>.Failure("Failed to generate refresh security token");
 
         var refreshTokenObject = new RefreshTokens
@@ -117,7 +144,11 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
             AccessTokenExpiryDate = expireTime,
             AccessRefreshToken = response.RefreshToken,
             RefreshTokenExpiryDate = refreshTokenObject.ExpiryDate,
-            CreatedDate = refreshTokenObject.CreatedAt
+            CreatedDate = refreshTokenObject.CreatedAt,
+            KdfSalt = Convert.ToBase64String(userDetails.UserKey.KdfSalt),
+            EncryptedDK = Convert.ToBase64String(userDetails.UserKey.PrimaryEncryptedDK),
+            DK_IV = Convert.ToBase64String(userDetails.UserKey.PrimaryDK_IV),
+            DK_Tag = Convert.ToBase64String(userDetails.UserKey.PrimaryDK_Tag)
         });
 
     }
@@ -181,12 +212,15 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
         return ServiceResponseGenerator<bool>.Failure("Invalid Otp");
     }
 
-    public async Task<ServiceResponseGenerator<bool>> ResetPassword(string email, string password, string ipAddress, CancellationToken ctx = default)
+    public async Task<ServiceResponseGenerator<bool>> ResetPassword(string email, string currentPasword, string newPassword, string ipAddress, CancellationToken ctx = default)
     {
         var user = await users.GetByEmailAsync(email, ctx);
         if (user == null) return ServiceResponseGenerator<bool>.Failure("Email does not Exists");
 
-        if (hasher.Verify(password, user.PasswordHash))
+        if (!hasher.Verify(currentPasword, user.PasswordHash))
+            return ServiceResponseGenerator<bool>.Failure("Invalid current password.");
+
+        if (hasher.Verify(newPassword, user.PasswordHash))
             return ServiceResponseGenerator<bool>.Failure("New password cannot be same as old password");
 
         if (user.IsDeleted)
@@ -195,7 +229,40 @@ public class AuthService(IUserRepository users, IPasswordHasher hasher, IOtpServ
         if (!user.IsActive)
             return ServiceResponseGenerator<bool>.Failure("Account has been deactivated");
 
-        var isUpdated = await users.UpdatePassword(user.UserId, hasher.Hash(password), ipAddress, ctx);
+        var backupMK = cryptoHelper.DeriveKey(user.Email, user.UserKey.KdfSalt);
+
+        // Decrypt DK
+        var dk = cryptoHelper.Decrypt(
+            user.UserKey.BackupEncryptedDK,
+            backupMK,
+            user.UserKey.BackupDK_IV,
+            user.UserKey.BackupDK_Tag
+        );
+
+        // new password setup
+        var newSalt = cryptoHelper.GenerateRandomBytes(16);
+        var newMK = cryptoHelper.DeriveKey(newPassword, newSalt);
+        var newBackupMK = cryptoHelper.DeriveKey(email, newSalt);
+
+        var (encDK, iv, tag) = cryptoHelper.Encrypt(dk, newMK);
+        var (bk_encDK, bk_iv, bk_tag) = cryptoHelper.Encrypt(dk, newBackupMK);
+
+        var userKey = new UserKey
+        {
+            PrimaryEncryptedDK = encDK,
+            PrimaryDK_IV = iv,
+            PrimaryDK_Tag = tag,
+
+            BackupEncryptedDK = bk_encDK,
+            BackupDK_IV = bk_iv,
+            BackupDK_Tag = bk_tag,
+
+            KdfSalt = newSalt,
+            UpdatedBy = ipAddress
+        };
+
+
+        var isUpdated = await users.UpdatePassword(userKey, user.UserId, hasher.Hash(newPassword), ipAddress, ctx);
         if (isUpdated)
             return ServiceResponseGenerator<bool>.Success("Password updated successfully", true);
         return ServiceResponseGenerator<bool>.Failure("Password update failed");

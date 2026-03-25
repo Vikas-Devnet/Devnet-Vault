@@ -14,6 +14,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<SubscriptionMaster> SubscriptionMaster => Set<SubscriptionMaster>();
     public DbSet<FeatureMaster> FeatureMaster => Set<FeatureMaster>();
     public DbSet<SubscriptionFeature> SubscriptionFeature => Set<SubscriptionFeature>();
+    public DbSet<UserKey> UserKeys => Set<UserKey>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

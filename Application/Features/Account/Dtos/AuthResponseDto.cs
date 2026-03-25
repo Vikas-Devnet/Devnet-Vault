@@ -7,4 +7,8 @@ public class AuthResponseDto
     public string AccessRefreshToken { get; set; } = string.Empty;
     public DateTime RefreshTokenExpiryDate { get; set; } = default;
     public DateTime CreatedDate { get; set; } = default;
+    public string KdfSalt { get; set; } = string.Empty;
+    public string EncryptedDK { get; set; } = string.Empty;
+    public string DK_IV { get; set; } = string.Empty;
+    public string DK_Tag { get; set; } = string.Empty;
 }

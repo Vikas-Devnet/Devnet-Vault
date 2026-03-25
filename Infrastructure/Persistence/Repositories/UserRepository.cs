@@ -15,7 +15,7 @@ public class UserRepository(AppDbContext db) : IUserRepository
     public Task<UserMaster?> GetUserByUserIdAsync(Guid userId, CancellationToken ctx = default)
        => db.UserMaster.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == userId && x.IsDeleted == false && x.IsActive, ctx);
 
-    public async Task<UserMaster?> AddAsync(UserMaster user, CancellationToken ctx = default)
+    public async Task<UserMaster?> AddAsync(UserMaster user, UserKey userKey, CancellationToken ctx = default)
     {
         using var trans = db.Database.BeginTransaction();
         try
@@ -24,6 +24,10 @@ public class UserRepository(AppDbContext db) : IUserRepository
             var changes = await db.SaveChangesAsync(ctx);
             if (changes > 0)
             {
+                userKey.UserId = user.UserId;
+                db.UserKeys.Add(userKey);
+                changes += await db.SaveChangesAsync(ctx);
+
                 var freePlan = await db.SubscriptionMaster.FirstOrDefaultAsync(x => x.IsDefault, ctx);
 
                 if (freePlan == null)
@@ -40,7 +44,7 @@ public class UserRepository(AppDbContext db) : IUserRepository
                 db.AccountDetails.Add(accountDetails);
                 changes += await db.SaveChangesAsync(ctx);
             }
-            if (changes == 2)
+            if (changes == 3)
             {
                 await trans.CommitAsync(ctx);
                 return user;
@@ -125,7 +129,7 @@ public class UserRepository(AppDbContext db) : IUserRepository
         }
     }
 
-    public async Task<bool> UpdatePassword(Guid userId, string password, string ipAddress, CancellationToken ctx = default)
+    public async Task<bool> UpdatePassword(UserKey userKey, Guid userId, string password, string ipAddress, CancellationToken ctx = default)
     {
         using var trans = db.Database.BeginTransaction();
         try
@@ -135,12 +139,24 @@ public class UserRepository(AppDbContext db) : IUserRepository
                    .SetProperty(x => x.UpdatedAt, DateTime.UtcNow)
                    .SetProperty(x => x.UpdatedBy, ipAddress), ctx);
 
+            var keyChanges = await db.UserKeys.Where(uk => uk.UserId == userId).ExecuteUpdateAsync(uk =>
+                uk.SetProperty(x => x.PrimaryEncryptedDK, userKey.PrimaryEncryptedDK)
+                .SetProperty(x => x.PrimaryDK_IV, userKey.PrimaryDK_IV)
+                .SetProperty(x => x.PrimaryDK_Tag, userKey.PrimaryDK_Tag)
+                .SetProperty(x => x.KdfSalt, userKey.KdfSalt)
+                .SetProperty(x => x.BackupEncryptedDK, userKey.BackupEncryptedDK)
+                .SetProperty(x => x.BackupDK_IV, userKey.BackupDK_IV)
+                .SetProperty(x => x.BackupDK_Tag, userKey.BackupDK_Tag)
+                .SetProperty(x => x.UpdatedAt, DateTime.UtcNow)
+                .SetProperty(x => x.UpdatedBy, ipAddress), ctx);
+
             var changes = await db.UserMaster.Where(e => e.UserId == userId && e.IsDeleted == false && e.IsActive).ExecuteUpdateAsync(
             x => x.SetProperty(y => y.PasswordHash, password)
             .SetProperty(y => y.UpdatedAt, DateTime.UtcNow)
             .SetProperty(y => y.UpdatedBy, ipAddress), ctx
             );
-            if (changes > 0)
+
+            if (changes > 0 && keyChanges > 0)
                 await trans.CommitAsync(ctx);
             else
                 trans.Rollback();

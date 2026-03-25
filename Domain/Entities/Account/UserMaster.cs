@@ -16,5 +16,6 @@ public class UserMaster : AuditProperty
 
     public ICollection<RefreshTokens> RefreshTokens { get; set; } = [];
     public AccountDetails AccountDetails { get; set; } = null!;
+    public UserKey UserKey { get; set; } = null!;
 
 }
